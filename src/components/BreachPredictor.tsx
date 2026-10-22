@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { SecurityTelemetry, BreachPredictionResult } from '../types';
+import { calculateHeuristicBreachProbability } from '../lib/localAnalysis';
 
 export const BreachPredictor: React.FC = () => {
   // Telemetry Inputs
@@ -33,24 +34,49 @@ export const BreachPredictor: React.FC = () => {
   const [prediction, setPrediction] = useState<BreachPredictionResult | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Initial calculation / run prediction
+  // Initial calculation / run prediction with client fallback
   const handleRunPrediction = async () => {
     setLoading(true);
+    let resolvedData: BreachPredictionResult | null = null;
+
     try {
       const resp = await fetch('/api/predict-breach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ telemetry }),
       });
-      const data = await resp.json();
-      setPrediction(data);
-      try {
-        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
-      } catch {
-        // ignore
+
+      if (resp.ok) {
+        const text = await resp.text();
+        try {
+          const parsed = JSON.parse(text);
+          if (parsed && typeof parsed === 'object' && typeof parsed.probability === 'number') {
+            resolvedData = {
+              ...parsed,
+              executiveSummary: parsed.executiveSummary || parsed.summary || '',
+            };
+          }
+        } catch (jsonErr) {
+          console.warn('Invalid JSON from /api/predict-breach, falling back to local computation:', jsonErr);
+        }
+      } else {
+        console.warn(`/api/predict-breach returned status ${resp.status}, falling back to local computation`);
       }
-    } catch (err) {
-      console.error('Breach prediction error:', err);
+    } catch (networkErr) {
+      console.warn('Network error calling /api/predict-breach, falling back to local computation:', networkErr);
+    }
+
+    // Fallback if request failed, returned non-OK status, or returned invalid JSON
+    if (!resolvedData) {
+      resolvedData = calculateHeuristicBreachProbability(telemetry);
+    }
+
+    setPrediction(resolvedData);
+
+    try {
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+    } catch {
+      // ignore
     } finally {
       setLoading(false);
     }
