@@ -1,0 +1,6 @@
+{
+  "name": "CyberShield E2EE - Habit Tracker & Cyber Defense Suite",
+  "description": "Zero-knowledge end-to-end encrypted habit tracking, vulnerability identification lab, social engineering defense, automated email threat alerts, and ML breach prediction.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
