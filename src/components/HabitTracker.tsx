@@ -224,22 +224,71 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
         </div>
 
         {/* Metric 2 */}
-        <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Daily Defense Habits
-            </span>
-            <CheckCircle className="w-4 h-4 text-cyan-400" />
+        <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+                Daily Defense Habits
+              </span>
+              <CheckCircle className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-3xl font-black text-white">
+                {completedTodayCount}
+              </span>
+              <span className="text-xs text-slate-400">/ {userData.habits.length} done</span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-400 font-mono">
+              {todayCompliancePct === 100
+                ? 'All daily routines secured'
+                : `${userData.habits.length - completedTodayCount} remaining today`}
+            </p>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">
-              {completedTodayCount}
+
+          {/* Radial Progress Bar */}
+          <div
+            className="relative w-16 h-16 shrink-0 flex items-center justify-center"
+            role="progressbar"
+            aria-valuenow={todayCompliancePct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Percentage of completed habits for today"
+          >
+            <svg className="w-16 h-16 -rotate-90 transform" viewBox="0 0 64 64">
+              <defs>
+                <linearGradient id="habitRadialGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#10b981" />
+                  <stop offset="100%" stopColor="#06b6d4" />
+                </linearGradient>
+              </defs>
+              <circle
+                cx="32"
+                cy="32"
+                r="26"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="6"
+                className="text-slate-800"
+              />
+              <circle
+                cx="32"
+                cy="32"
+                r="26"
+                fill="none"
+                stroke="url(#habitRadialGrad)"
+                strokeWidth="6"
+                strokeLinecap="round"
+                strokeDasharray={2 * Math.PI * 26}
+                strokeDashoffset={
+                  2 * Math.PI * 26 * (1 - Math.min(100, Math.max(0, todayCompliancePct)) / 100)
+                }
+                className="transition-all duration-500 ease-out"
+              />
+            </svg>
+            <span className="absolute text-xs font-mono font-bold text-cyan-300">
+              {todayCompliancePct}%
             </span>
-            <span className="text-xs text-slate-400">/ {userData.habits.length} done</span>
           </div>
-          <p className="mt-1 text-[11px] text-slate-400 font-mono">
-            {todayCompliancePct}% completed today
-          </p>
         </div>
 
         {/* Metric 3 */}

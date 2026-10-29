@@ -66,7 +66,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-sm sm:text-base tracking-tight text-white">
-                CyberShield <span className="text-emerald-400">E2EE</span>
+                Maniq CyberShield <span className="text-emerald-400">E2EE</span>
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
                 v2.6 SEC-OPS
@@ -143,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <Share2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Share CyberShield E2EE</h3>
+                  <h3 className="text-base font-bold text-white">Share Maniq CyberShield E2EE</h3>
                   <p className="text-xs text-slate-400">Direct public access &mdash; no Google login required</p>
                 </div>
               </div>

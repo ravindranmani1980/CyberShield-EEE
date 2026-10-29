@@ -10,9 +10,11 @@ import {
   EncryptedPayload,
 } from './lib/crypto';
 import { INITIAL_USER_DATA } from './data/defaultVaultData';
-import { VaultCredentialItem, EncryptedUserData } from './types';
+import { VaultCredentialItem, EncryptedUserData, HabitItem } from './types';
 import { Navbar, ActiveTab } from './components/Navbar';
 import { HabitTracker } from './components/HabitTracker';
+import { DailySecurityTip } from './components/DailySecurityTip';
+import { SecurityTip } from './data/securityTipsData';
 import { EmailScanner } from './components/EmailScanner';
 import { PhishingCampaigns } from './components/PhishingCampaigns';
 import { VulnerabilityLab } from './components/VulnerabilityLab';
@@ -168,6 +170,35 @@ export default function App() {
     await handleUpdateUserData(updated);
   };
 
+  // Convert a Daily Security Tip into a tracked E2EE Habit routine
+  const handleAddTipAsHabit = async (tip: SecurityTip) => {
+    if (!decryptedUserData) return;
+    const categoryMap: Record<SecurityTip['category'], HabitItem['category']> = {
+      'Identity & Access': 'identity',
+      'Zero-Trust Network': 'network',
+      'AppSec & Code': 'code_audit',
+      'Phishing & OpSec': 'health_opsec',
+      'Cloud Hardening': 'threat_intel',
+      'Endpoint Defense': 'health_opsec',
+    };
+    const newHabit: HabitItem = {
+      id: `h-tip-${Date.now()}`,
+      title: tip.title,
+      description: tip.actionableStep,
+      category: categoryMap[tip.category] || 'identity',
+      cadence: 'daily',
+      priority: tip.impactLevel === 'CRITICAL' ? 'CRITICAL' : 'HIGH',
+      completedDates: [],
+      streak: 0,
+    };
+    const updated: EncryptedUserData = {
+      ...decryptedUserData,
+      habits: [newHabit, ...decryptedUserData.habits],
+      lastUpdated: new Date().toISOString(),
+    };
+    await handleUpdateUserData(updated);
+  };
+
   // Export encrypted backup (.cybervault JSON)
   const handleExportBackup = () => {
     if (!encryptedPayload) return;
@@ -233,7 +264,12 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
         {/* Habit & Productivity Tracker View */}
         {activeTab === 'habits' && (
-          <div>
+          <div className="space-y-6">
+            <DailySecurityTip
+              isVaultUnlocked={!isLocked && !!decryptedUserData}
+              onAddTipAsHabit={handleAddTipAsHabit}
+            />
+
             {isLocked || !decryptedUserData ? (
               <div className="p-8 max-w-xl mx-auto rounded-3xl bg-slate-900 border border-slate-800 text-center space-y-4 shadow-2xl mt-8">
                 <div className="w-16 h-16 rounded-2xl bg-slate-950 border border-emerald-500/30 text-emerald-400 mx-auto flex items-center justify-center shadow-lg shadow-emerald-950">
@@ -316,7 +352,7 @@ export default function App() {
       <footer className="border-t border-slate-900 bg-slate-950 py-5 text-center text-slate-500 text-[11px] font-mono">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span>CyberShield Defensive Platform &bull; Zero Plaintext Stored &bull; Client WebCrypto AES-GCM-256</span>
+            <span>Maniq CyberShield E2EE Defensive Platform &bull; Zero Plaintext Stored &bull; Client WebCrypto AES-GCM-256</span>
           </div>
           <div className="flex items-center gap-1.5 text-slate-400">
             <span>Author:</span>
