@@ -21,8 +21,9 @@ import { VulnerabilityLab } from './components/VulnerabilityLab';
 import { SocialEngineeringTrainer } from './components/SocialEngineeringTrainer';
 import { BreachPredictor } from './components/BreachPredictor';
 import { CyberTrainingGame } from './components/CyberTrainingGame';
+import { PrivacyDisclaimer } from './components/PrivacyDisclaimer';
 import { VaultManagerModal } from './components/VaultManagerModal';
-import { Shield, Lock, ShieldAlert, Key, ExternalLink } from 'lucide-react';
+import { Shield, Lock, ShieldAlert, Key, ExternalLink, EyeOff } from 'lucide-react';
 
 const VAULT_STORAGE_KEY = 'cybershield_e2ee_vault';
 
@@ -125,6 +126,16 @@ export default function App() {
   const handleLockVault = () => {
     setMasterPassphrase(null);
     setDecryptedUserData(null);
+    setIsLocked(true);
+  };
+
+  // Wipe all local browser storage for this app
+  const handlePurgeLocalData = () => {
+    localStorage.removeItem(VAULT_STORAGE_KEY);
+    localStorage.removeItem('cybershield_game_high_score');
+    setEncryptedPayload(null);
+    setDecryptedUserData(null);
+    setMasterPassphrase(null);
     setIsLocked(true);
   };
 
@@ -325,6 +336,14 @@ export default function App() {
 
         {/* Threat Blitz Training Game View */}
         {activeTab === 'training_game' && <CyberTrainingGame />}
+
+        {/* Disclaimer & Zero-Storage Privacy Policy View */}
+        {activeTab === 'disclaimer' && (
+          <PrivacyDisclaimer
+            hasLocalVault={!!encryptedPayload}
+            onPurgeLocalData={handlePurgeLocalData}
+          />
+        )}
       </main>
 
       {/* Vault Setup / Unlock / Password Generator Modal */}
@@ -348,11 +367,19 @@ export default function App() {
         />
       )}
 
-      {/* Footer Info with Author & Website */}
+      {/* Footer Info with Disclaimer Notice, Author & Website */}
       <footer className="border-t border-slate-900 bg-slate-950 py-5 text-center text-slate-500 text-[11px] font-mono">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span>Maniq CyberShield E2EE Defensive Platform &bull; Zero Plaintext Stored &bull; Client WebCrypto AES-GCM-256</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span>Maniq CyberShield E2EE Defensive Platform &bull; We Do Not Store or Record Entered Information</span>
+            <span>&bull;</span>
+            <button
+              onClick={() => setActiveTab('disclaimer')}
+              className="text-emerald-400 hover:text-emerald-300 font-semibold underline-offset-2 hover:underline inline-flex items-center gap-1"
+            >
+              <EyeOff className="w-3 h-3" />
+              Read Privacy Disclaimer
+            </button>
           </div>
           <div className="flex items-center gap-1.5 text-slate-400">
             <span>Author:</span>

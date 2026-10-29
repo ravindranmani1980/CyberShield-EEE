@@ -15,6 +15,7 @@ import {
   Copy,
   Check,
   Gamepad2,
+  EyeOff,
 } from 'lucide-react';
 
 export type ActiveTab =
@@ -24,7 +25,8 @@ export type ActiveTab =
   | 'vulnerability_lab'
   | 'vishing'
   | 'breach_predictor'
-  | 'training_game';
+  | 'training_game'
+  | 'disclaimer';
 
 interface NavbarProps {
   activeTab: ActiveTab;
@@ -88,8 +90,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Action Controls: Share, Password Generator & Vault Status */}
+        {/* Action Controls: Disclaimer, Share, Password Generator & Vault Status */}
         <div className="flex items-center gap-2">
+          {/* Disclaimer Button */}
+          <button
+            onClick={() => onSelectTab('disclaimer')}
+            className={`px-3 py-1.5 rounded-xl border text-xs font-mono flex items-center gap-1.5 transition shadow-sm ${
+              activeTab === 'disclaimer'
+                ? 'border-emerald-400 bg-emerald-500/20 text-emerald-200'
+                : 'border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300'
+            }`}
+            title="Privacy Disclaimer: We do not store or record any information entered here"
+          >
+            <EyeOff className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Disclaimer</span>
+          </button>
+
           {/* Share Button */}
           <button
             onClick={() => setShowShareModal(true)}
@@ -224,12 +240,12 @@ export const Navbar: React.FC<NavbarProps> = ({
       )}
 
       {/* Nav Tabs Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1 overflow-x-auto pb-2 sm:pb-0 text-xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1 overflow-x-auto no-scrollbar pb-2 sm:pb-0 text-xs">
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => onSelectTab(item.id)}
-            className={`px-3.5 py-2.5 font-medium whitespace-nowrap transition flex items-center gap-2 border-b-2 ${
+            className={`px-3 py-2.5 font-medium whitespace-nowrap transition flex items-center gap-2 border-b-2 ${
               activeTab === item.id
                 ? 'border-emerald-400 text-white font-semibold'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
