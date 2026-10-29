@@ -1,17 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   PhoneCall,
   PhoneOff,
-  PhoneForwarded,
-  ShieldAlert,
   ShieldCheck,
-  Volume2,
-  VolumeX,
-  AlertCircle,
-  HelpCircle,
   Award,
   RotateCcw,
-  Sparkles,
   Zap,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -29,7 +22,6 @@ export const SocialEngineeringTrainer: React.FC = () => {
   const [dialogueHistory, setDialogueHistory] = useState<
     { speaker: 'caller' | 'user'; text: string; feedback?: string; isSafe?: boolean }[]
   >([]);
-  const [isAudioMuted, setIsAudioMuted] = useState(false);
 
   const scenario = scenarios.find((s) => s.id === selectedScenarioId) || scenarios[0];
   const currentNode: VishingDialogueNode =
@@ -64,7 +56,8 @@ export const SocialEngineeringTrainer: React.FC = () => {
       {
         speaker: 'user',
         text: '[Terminated Call immediately and blocked spoofed number]',
-        feedback: 'Excellent defense! Terminating unsolicited inbound calls requesting urgent action eliminates the attack surface.',
+        feedback:
+          'Excellent defense! Terminating unsolicited inbound calls requesting urgent action eliminates the attack surface.',
         isSafe: true,
       },
     ]);
@@ -107,7 +100,7 @@ export const SocialEngineeringTrainer: React.FC = () => {
               particleCount: 80,
               spread: 70,
               origin: { y: 0.7 },
-              colors: ['#10b981', '#06b6d4'],
+              colors: ['#2BB5A0', '#5FD3BF'],
             });
           } catch {
             // ignore
@@ -121,77 +114,87 @@ export const SocialEngineeringTrainer: React.FC = () => {
     setDialogueHistory(updatedHistory);
   };
 
-  const getTriggerBadge = (trigger: string) => {
-    switch (trigger) {
-      case 'Urgency':
-        return 'bg-rose-500/15 text-rose-400 border-rose-500/30';
-      case 'Authority':
-        return 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30';
-      case 'Fear':
-        return 'bg-amber-500/15 text-amber-400 border-amber-500/30';
-      default:
-        return 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30';
-    }
-  };
-
   return (
     <div className="space-y-6">
-      {/* Top Banner and Scenario Chooser */}
-      <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <PhoneCall className="w-5 h-5 text-amber-400" />
-            Vishing, OTP & ATM PIN Social Engineering Defense Trainer
-          </h2>
-          <p className="text-xs text-slate-400">
-            Interactive simulated voice scams. Practice confronting pressure tactics, urgent money wires, and credential extraction.
-          </p>
+      {/* Postrix Command Header */}
+      <section className="xh-panel">
+        <div className="xh-kicker">
+          <span className="k">Voice Phishing (Vishing) &amp; Out-of-Band OTP Defense</span>
+          <span className="tag">Caller ID Spoofing · Urgent Wire Pretext</span>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-b border-[#C9D3D9]/12">
+          <div>
+            <h2 className="text-lg font-semibold text-[#EEF3F1] flex items-center gap-2">
+              <PhoneCall className="w-5 h-5 text-[#EBC385]" />
+              Vishing, OTP &amp; ATM PIN Social Engineering Defense Trainer
+            </h2>
+            <p className="text-xs text-[#A9B7BF] mt-0.5">
+              Interactive simulated voice scams. Practice confronting pressure tactics, urgent money wires, and credential extraction.
+            </p>
+          </div>
+
+          <div className="xh-metric !py-2 !px-4 flex items-center gap-3">
+            <div>
+              <span className="text-[11px] font-mono uppercase text-[#5FD3BF] block">
+                Resistance Score
+              </span>
+              <span className="text-xl font-mono font-semibold text-[#EEF3F1] tabular-nums">
+                {score} <span className="text-xs text-[#A9B7BF] font-normal">/ 100</span>
+              </span>
+            </div>
+            <Award className="w-5 h-5 text-[#EBC385]" />
+          </div>
         </div>
 
         {/* Preset Selector */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-4 text-xs">
+          <span className="text-[#A9B7BF] font-mono text-[11px] uppercase mr-1 shrink-0">
+            Select Scenario:
+          </span>
           {scenarios.map((s) => (
             <button
               key={s.id}
+              type="button"
               onClick={() => handleSelectScenario(s.id)}
-              className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition border text-xs font-medium ${
+              className={`xh-btn !py-1.5 !px-3 whitespace-nowrap shrink-0 ${
                 selectedScenarioId === s.id
-                  ? 'bg-amber-500/15 text-amber-300 border-amber-500/40'
-                  : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                  ? '!border-[#5FD3BF] !bg-[#5FD3BF]/15 !text-[#5FD3BF]'
+                  : ''
               }`}
             >
               {s.attackVector}: {s.title.split(':')[0]}
             </button>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* Main Grid: Interactive Smartphone Simulator on Left, Psychological Radar & Takeaways on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Smartphone Call Screen (6 cols) */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="mx-auto max-w-sm rounded-3xl bg-slate-950 border-4 border-slate-800 shadow-2xl overflow-hidden relative">
+          <div className="mx-auto max-w-sm rounded-3xl bg-[#081420] border-4 border-[#0E2238] shadow-2xl overflow-hidden relative">
             {/* Phone Notch & Status Bar */}
-            <div className="h-6 bg-slate-900 flex items-center justify-between px-6 text-[10px] font-mono text-slate-400 border-b border-slate-800/60">
+            <div className="h-6 bg-[#0D1C2D] flex items-center justify-between px-6 text-[10px] font-mono text-[#A9B7BF] border-b border-[#3E6E86]/40">
               <span>09:41</span>
-              <div className="w-16 h-3 bg-slate-950 rounded-b-xl border border-slate-800/80" />
+              <div className="w-16 h-3 bg-[#081420] rounded-b-xl border border-[#3E6E86]/40" />
               <span>5G 100%</span>
             </div>
 
             {/* Simulated Inbound Call HUD */}
-            <div className="p-6 text-center space-y-3 bg-gradient-to-b from-slate-900 to-slate-950">
-              <div className="w-16 h-16 rounded-full bg-slate-800 border-2 border-amber-500/50 mx-auto flex items-center justify-center text-amber-400 shadow-lg shadow-amber-950/40 animate-pulse">
+            <div className="p-6 text-center space-y-3 bg-gradient-to-b from-[#0D1C2D] to-[#081420]">
+              <div className="w-16 h-16 rounded-full bg-[#102236] border-2 border-[#D79A45] mx-auto flex items-center justify-center text-[#EBC385] shadow-lg animate-pulse">
                 <PhoneCall className="w-7 h-7" />
               </div>
 
               <div>
-                <h3 className="text-base font-bold text-white tracking-tight">
+                <h3 className="text-base font-bold text-[#EEF3F1] tracking-tight">
                   {scenario.callerName}
                 </h3>
-                <p className="text-xs text-rose-400 font-mono mt-0.5">
+                <p className="text-xs text-red-400 font-mono mt-0.5">
                   {scenario.spoofedCallerId} (Spoofed Caller ID)
                 </p>
-                <span className="inline-block mt-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
+                <span className="inline-block mt-1 text-[10px] font-mono px-2 py-0.5 rounded bg-[#102236] text-[#5FD3BF] border border-[#3E6E86]/40">
                   {scenario.callerRole}
                 </span>
               </div>
@@ -199,23 +202,25 @@ export const SocialEngineeringTrainer: React.FC = () => {
               {callState === 'ringing' && (
                 <div className="pt-6 flex items-center justify-center gap-8">
                   <button
+                    type="button"
                     onClick={handleDeclineCall}
-                    className="flex flex-col items-center gap-1 group"
+                    className="flex flex-col items-center gap-1 group cursor-pointer"
                   >
-                    <div className="w-12 h-12 rounded-full bg-rose-600 group-hover:bg-rose-500 flex items-center justify-center text-white transition shadow-lg shadow-rose-950">
+                    <div className="w-12 h-12 rounded-full bg-red-600 group-hover:bg-red-500 flex items-center justify-center text-white transition shadow-lg">
                       <PhoneOff className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] text-slate-400 font-medium">Decline</span>
+                    <span className="text-[10px] text-[#A9B7BF] font-medium">Decline</span>
                   </button>
 
                   <button
+                    type="button"
                     onClick={handleAnswerCall}
-                    className="flex flex-col items-center gap-1 group"
+                    className="flex flex-col items-center gap-1 group cursor-pointer"
                   >
-                    <div className="w-12 h-12 rounded-full bg-emerald-600 group-hover:bg-emerald-500 flex items-center justify-center text-white transition shadow-lg shadow-emerald-950 animate-bounce">
+                    <div className="w-12 h-12 rounded-full bg-[#2BB5A0] group-hover:bg-[#5FD3BF] flex items-center justify-center text-[#04211B] transition shadow-lg animate-bounce">
                       <PhoneCall className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] text-emerald-400 font-medium">Answer Call</span>
+                    <span className="text-[10px] text-[#5FD3BF] font-medium">Answer Call</span>
                   </button>
                 </div>
               )}
@@ -223,26 +228,26 @@ export const SocialEngineeringTrainer: React.FC = () => {
 
             {/* In-Call Dialogue Area */}
             {callState !== 'ringing' && (
-              <div className="p-4 bg-slate-950 border-t border-slate-800 space-y-3 min-h-[300px] flex flex-col justify-between">
+              <div className="p-4 bg-[#081420] border-t border-[#3E6E86]/40 space-y-3 min-h-[300px] flex flex-col justify-between">
                 {/* Dialogue Stream */}
                 <div className="space-y-2.5 overflow-y-auto max-h-60 pr-1 text-xs">
                   {dialogueHistory.map((d, idx) => (
                     <div
                       key={idx}
-                      className={`p-3 rounded-2xl ${
+                      className={`p-3 rounded-xl ${
                         d.speaker === 'caller'
-                          ? 'bg-slate-900 border border-slate-800 text-slate-200'
+                          ? 'bg-[#102236] border border-[#3E6E86]/50 text-[#EEF3F1]'
                           : d.isSafe
-                          ? 'bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 ml-4'
-                          : 'bg-rose-950/40 border border-rose-500/40 text-rose-200 ml-4'
+                          ? 'bg-emerald-950/60 border border-[#5FD3BF]/40 text-[#EEF3F1] ml-4'
+                          : 'bg-red-950/60 border border-red-400/40 text-red-100 ml-4'
                       }`}
                     >
-                      <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 mb-1">
+                      <div className="flex items-center justify-between text-[10px] font-mono text-[#A9B7BF] mb-1">
                         <span>{d.speaker === 'caller' ? scenario.callerName : 'You'}</span>
                       </div>
                       <p className="leading-relaxed">{d.text}</p>
                       {d.feedback && (
-                        <div className="mt-2 pt-2 border-t border-slate-800/80 text-[11px] font-mono text-slate-400">
+                        <div className="mt-2 pt-2 border-t border-[#3E6E86]/40 text-[11px] font-mono text-[#5FD3BF]">
                           {d.feedback}
                         </div>
                       )}
@@ -252,15 +257,16 @@ export const SocialEngineeringTrainer: React.FC = () => {
 
                 {/* Response Options */}
                 {callState === 'in_call' && currentNode.options && (
-                  <div className="space-y-2 pt-2 border-t border-slate-800">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase block">
+                  <div className="space-y-2 pt-2 border-t border-[#3E6E86]/40">
+                    <span className="text-[10px] font-mono text-[#5FD3BF] uppercase block">
                       Choose Your Response:
                     </span>
                     {currentNode.options.map((opt, i) => (
                       <button
                         key={i}
+                        type="button"
                         onClick={() => handleSelectOption(opt)}
-                        className="w-full text-left p-2.5 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-slate-700 text-slate-200 text-xs transition leading-snug"
+                        className="w-full text-left p-2.5 rounded-lg bg-[#102236] hover:bg-[#0D1C2D] border border-[#3E6E86]/50 hover:border-[#5FD3BF] text-[#EEF3F1] text-xs transition leading-snug cursor-pointer"
                       >
                         {opt.text}
                       </button>
@@ -271,10 +277,12 @@ export const SocialEngineeringTrainer: React.FC = () => {
                 {callState === 'ended' && (
                   <div className="pt-2 text-center">
                     <button
+                      type="button"
                       onClick={() => handleSelectScenario(selectedScenarioId)}
-                      className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center justify-center gap-1.5 mx-auto"
+                      className="xh-btn primary mx-auto"
                     >
-                      <RotateCcw className="w-3.5 h-3.5" /> Replay Scenario
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Replay Scenario</span>
                     </button>
                   </div>
                 )}
@@ -285,91 +293,82 @@ export const SocialEngineeringTrainer: React.FC = () => {
 
         {/* Right Column: Psychological Radar & Golden Defense Rules (6 cols) */}
         <div className="lg:col-span-6 space-y-4">
-          {/* Awareness Score HUD */}
-          <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
-            <div>
-              <span className="text-xs font-mono uppercase text-slate-400">
-                Vishing Resistance Score
-              </span>
-              <div className="text-2xl font-bold text-white mt-1">
-                {score} <span className="text-xs text-slate-400 font-normal">/ 100</span>
-              </div>
-            </div>
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-              <Award className="w-6 h-6" />
-            </div>
-          </div>
-
           {/* Social Engineering Levers Radar */}
-          <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3 text-xs">
-            <h3 className="font-bold text-slate-300 uppercase font-mono text-xs flex items-center gap-2">
-              <Zap className="w-4 h-4 text-amber-400" />
-              Psychological Manipulation Levers Used by Attackers
-            </h3>
+          <div className="bg-white border border-[#D9DDD3] rounded-xl p-6 space-y-3 text-xs shadow-xs">
+            <div>
+              <span className="rm-kicker">01 / Adversary Tradecraft</span>
+              <h3 className="font-semibold text-sm text-[#16232F] flex items-center gap-2">
+                <Zap className="w-4 h-4 text-[#D79A45]" />
+                Psychological Manipulation Levers Used by Attackers
+              </h3>
+            </div>
 
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80">
-                <span className="font-semibold text-rose-400 block font-mono text-[11px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3.5 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3]">
+                <span className="font-semibold text-red-800 block font-mono text-[11px]">
                   1. Artificial Urgency
                 </span>
-                <p className="text-slate-400 text-[11px] mt-1 leading-relaxed">
-                  "Only 45 seconds before the wire clears!" &mdash; rushes victims into bypassing standard skepticism.
+                <p className="text-[#4B5A66] text-[11px] mt-1 leading-relaxed">
+                  &ldquo;Only 45 seconds before the wire clears!&rdquo; — rushes victims into bypassing standard skepticism.
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80">
-                <span className="font-semibold text-indigo-400 block font-mono text-[11px]">
+              <div className="p-3.5 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3]">
+                <span className="font-semibold text-[#0E2238] block font-mono text-[11px]">
                   2. False Authority
                 </span>
-                <p className="text-slate-400 text-[11px] mt-1 leading-relaxed">
-                  "Senior Fraud Inspector" / "Tier-3 IT" &mdash; exploits deference to corporate hierarchy.
+                <p className="text-[#4B5A66] text-[11px] mt-1 leading-relaxed">
+                  &ldquo;Senior Fraud Inspector&rdquo; / &ldquo;Tier-3 IT&rdquo; — exploits deference to corporate hierarchy.
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80">
-                <span className="font-semibold text-amber-400 block font-mono text-[11px]">
+              <div className="p-3.5 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3]">
+                <span className="font-semibold text-amber-800 block font-mono text-[11px]">
                   3. Fear of Consequence
                 </span>
-                <p className="text-slate-400 text-[11px] mt-1 leading-relaxed">
-                  "You will lose liability protection!" &mdash; creates panic of catastrophic personal loss.
+                <p className="text-[#4B5A66] text-[11px] mt-1 leading-relaxed">
+                  &ldquo;You will lose liability protection!&rdquo; — creates panic of catastrophic personal loss.
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80">
-                <span className="font-semibold text-cyan-400 block font-mono text-[11px]">
+              <div className="p-3.5 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3]">
+                <span className="font-semibold text-emerald-800 block font-mono text-[11px]">
                   4. Caller ID Spoofing
                 </span>
-                <p className="text-slate-400 text-[11px] mt-1 leading-relaxed">
-                  Displaying your real bank's 1-800 number to trick you into trusting the inbound call.
+                <p className="text-[#4B5A66] text-[11px] mt-1 leading-relaxed">
+                  Displaying your real bank&apos;s 1-800 number to trick you into trusting the inbound call.
                 </p>
               </div>
             </div>
           </div>
 
           {/* Mandatory Golden Rules */}
-          <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-2 text-xs">
-            <h4 className="font-bold text-emerald-300 font-mono flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              The Cardinal Rules of Phone & Money Defense
-            </h4>
+          <div className="bg-white border border-[#D9DDD3] rounded-xl p-6 space-y-3 text-xs shadow-xs">
+            <div>
+              <span className="rm-kicker">02 / Non-Negotiable Protocols</span>
+              <h4 className="font-semibold text-sm text-[#16232F] flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                The Cardinal Rules of Phone &amp; Money Defense
+              </h4>
+            </div>
 
-            <ul className="space-y-2 text-slate-300 leading-relaxed">
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-400 font-bold">&bull;</span>
+            <ul className="space-y-2.5 text-[#4B5A66] leading-relaxed">
+              <li className="p-3 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3] flex items-start gap-2">
+                <span className="text-emerald-700 font-bold">·</span>
                 <span>
-                  <strong>NEVER share an OTP or 2FA code:</strong> Genuine banks, Amazon, Google, or Apple will NEVER call asking you to read a temporary passkey. The SMS itself warns you.
+                  <strong className="text-[#16232F]">NEVER share an OTP or 2FA code:</strong> Genuine banks, Amazon, Google, or Apple will NEVER call asking you to read a temporary passkey. The SMS itself warns you.
                 </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-400 font-bold">&bull;</span>
+              <li className="p-3 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3] flex items-start gap-2">
+                <span className="text-emerald-700 font-bold">·</span>
                 <span>
-                  <strong>NEVER disclose ATM or Card PINs:</strong> Your 4-digit or 6-digit PIN is strictly for you at the terminal or ATM. IT or bank personnel have zero legitimate need for it.
+                  <strong className="text-[#16232F]">NEVER disclose ATM or Card PINs:</strong> Your 4-digit or 6-digit PIN is strictly for you at the terminal or ATM. IT or bank personnel have zero legitimate need for it.
                 </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-400 font-bold">&bull;</span>
+              <li className="p-3 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3] flex items-start gap-2">
+                <span className="text-emerald-700 font-bold">·</span>
                 <span>
-                  <strong>Out-of-Band Verification:</strong> If a caller claims an unauthorized wire is pending, immediately hang up. Turn your debit card over and dial the official phone number printed on the physical plastic.
+                  <strong className="text-[#16232F]">Out-of-Band Verification:</strong> If a caller claims an unauthorized wire is pending, immediately hang up. Turn your debit card over and dial the official phone number printed on the physical plastic.
                 </span>
               </li>
             </ul>

@@ -23,7 +23,7 @@ import { BreachPredictor } from './components/BreachPredictor';
 import { CyberTrainingGame } from './components/CyberTrainingGame';
 import { PrivacyDisclaimer } from './components/PrivacyDisclaimer';
 import { VaultManagerModal } from './components/VaultManagerModal';
-import { Shield, Lock, ShieldAlert, Key, ExternalLink, EyeOff } from 'lucide-react';
+import { Lock, Key, EyeOff } from 'lucide-react';
 
 const VAULT_STORAGE_KEY = 'cybershield_e2ee_vault';
 
@@ -107,7 +107,6 @@ export default function App() {
         encryptedPayload,
         passphrase
       );
-      // Ensure storedCredentials array exists
       if (!decrypted.storedCredentials) {
         decrypted.storedCredentials = INITIAL_USER_DATA.storedCredentials || [];
       }
@@ -133,6 +132,7 @@ export default function App() {
   const handlePurgeLocalData = () => {
     localStorage.removeItem(VAULT_STORAGE_KEY);
     localStorage.removeItem('cybershield_game_high_score');
+    localStorage.removeItem('cybershield_game_highscore');
     setEncryptedPayload(null);
     setDecryptedUserData(null);
     setMasterPassphrase(null);
@@ -254,8 +254,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
-      {/* Top Navbar HUD */}
+    <div className="min-h-screen flex flex-col bg-[#F3F5F1] text-[#16232F]">
+      {/* Top Postrix-Style Header & Subbar */}
       <Navbar
         activeTab={activeTab}
         onSelectTab={setActiveTab}
@@ -272,7 +272,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-8">
         {/* Habit & Productivity Tracker View */}
         {activeTab === 'habits' && (
           <div className="space-y-6">
@@ -282,29 +282,41 @@ export default function App() {
             />
 
             {isLocked || !decryptedUserData ? (
-              <div className="p-8 max-w-xl mx-auto rounded-3xl bg-slate-900 border border-slate-800 text-center space-y-4 shadow-2xl mt-8">
-                <div className="w-16 h-16 rounded-2xl bg-slate-950 border border-emerald-500/30 text-emerald-400 mx-auto flex items-center justify-center shadow-lg shadow-emerald-950">
-                  <Lock className="w-8 h-8" />
+              <section className="xh-panel max-w-2xl mx-auto text-center space-y-4 mt-6">
+                <div className="xh-kicker justify-center">
+                  <span className="k">Zero-Knowledge Client-Side Cryptography</span>
+                  <span className="tag">AES-GCM 256-Bit · PBKDF2</span>
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white">
-                    Zero-Knowledge Personal Vault Locked
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">
-                    All habits, streaks, credentials, and threat hunting notes are encrypted using client-side AES-GCM 256-bit.
-                  </p>
+                <div className="pt-2 space-y-3">
+                  <div className="w-14 h-14 rounded-xl bg-[#102236] border border-[#5FD3BF]/40 text-[#5FD3BF] mx-auto flex items-center justify-center shadow-md">
+                    <Lock className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#EEF3F1]">
+                      Zero-Knowledge Personal Vault Locked
+                    </h3>
+                    <p className="text-xs text-[#A9B7BF] mt-1 max-w-md mx-auto leading-relaxed">
+                      All habits, streaks, credentials, and threat hunting notes are encrypted in your browser using client-side AES-GCM 256-bit. We never store or record your information.
+                    </p>
+                  </div>
+                  <div className="pt-1">
+                    <button
+                      onClick={() => {
+                        setVaultModalTab('access');
+                        setShowVaultModal(true);
+                      }}
+                      className="xh-btn primary mx-auto"
+                    >
+                      <Key className="w-4 h-4" />
+                      <span>
+                        {encryptedPayload
+                          ? 'Unlock with Master Passphrase'
+                          : 'Initialize Master Passphrase'}
+                      </span>
+                    </button>
+                  </div>
                 </div>
-                <button
-                  onClick={() => {
-                    setVaultModalTab('access');
-                    setShowVaultModal(true);
-                  }}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-medium text-xs shadow-lg shadow-emerald-950 transition flex items-center gap-2 mx-auto"
-                >
-                  <Key className="w-4 h-4" />
-                  {encryptedPayload ? 'Unlock with Passphrase' : 'Create Master Passphrase'}
-                </button>
-              </div>
+              </section>
             ) : (
               <HabitTracker
                 userData={decryptedUserData}
@@ -367,32 +379,51 @@ export default function App() {
         />
       )}
 
-      {/* Footer Info with Disclaimer Notice, Author & Website */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-5 text-center text-slate-500 text-[11px] font-mono">
-        <div className="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <span>Maniq CyberShield E2EE Defensive Platform &bull; We Do Not Store or Record Entered Information</span>
-            <span>&bull;</span>
-            <button
-              onClick={() => setActiveTab('disclaimer')}
-              className="text-emerald-400 hover:text-emerald-300 font-semibold underline-offset-2 hover:underline inline-flex items-center gap-1"
-            >
-              <EyeOff className="w-3 h-3" />
-              Read Privacy Disclaimer
-            </button>
+      {/* Postrix-Style Footer */}
+      <footer className="bg-[#081420] text-[#B9C4CC] border-t border-[#3E6E86]/35 px-4 sm:px-6 py-6 mt-auto no-print">
+        <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="rm-mono-mark !w-6 !h-6 !text-[11px]" aria-hidden="true">
+              RM
+            </span>
+            <span>
+              <strong className="font-serif text-sm font-semibold text-[#F3F5F1]">
+                Maniq <span className="text-[#D79A45]">CyberShield E2EE</span>
+              </strong>{' '}
+              — Zero-Knowledge Cyber Defense &amp; Habit Suite · We Do Not Store or Record Entered Information
+            </span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <span>Author:</span>
-            <span className="font-semibold text-slate-200">Mani Ravindran</span>
-            <span>&bull;</span>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setActiveTab('disclaimer')}
+              className="font-mono text-[#5FD3BF] hover:text-[#EBC385] underline underline-offset-4 transition-colors inline-flex items-center gap-1 cursor-pointer"
+            >
+              <EyeOff className="w-3.5 h-3.5" />
+              <span>Privacy Disclaimer</span>
+            </button>
+            <span className="text-[#3E6E86]">·</span>
+            <span>
+              Author: <strong className="font-medium text-[#F3F5F1]">Mani Ravindran</strong>
+            </span>
+            <span className="text-[#3E6E86]">·</span>
             <a
               href="https://www.ravindran.in"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cyan-400 hover:text-cyan-300 font-semibold underline-offset-2 hover:underline flex items-center gap-1"
+              className="font-mono text-[#5FD3BF] hover:text-[#EBC385] underline underline-offset-4 transition-colors"
             >
-              www.ravindran.in
-              <ExternalLink className="w-3 h-3" />
+              ravindran.in
+            </a>
+            <span className="text-[#3E6E86]">·</span>
+            <a
+              href="https://ravindran.in/support.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono font-medium text-[#EBC385] hover:text-[#D79A45] underline underline-offset-4 transition-colors"
+            >
+              Support to Author
             </a>
           </div>
         </div>

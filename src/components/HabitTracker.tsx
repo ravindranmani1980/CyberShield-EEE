@@ -9,10 +9,6 @@ import {
   Pause,
   RotateCcw,
   Clock,
-  Lock,
-  Calendar,
-  Sparkles,
-  Tag,
   Activity,
   Award,
 } from 'lucide-react';
@@ -29,8 +25,6 @@ interface HabitTrackerProps {
 export const HabitTracker: React.FC<HabitTrackerProps> = ({
   userData,
   onUpdateUserData,
-  onOpenVaultModal,
-  isLocked,
 }) => {
   const today = new Date().toISOString().split('T')[0];
 
@@ -92,7 +86,7 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
             particleCount: 40,
             spread: 50,
             origin: { y: 0.7 },
-            colors: ['#10b981', '#06b6d4', '#6366f1'],
+            colors: ['#2BB5A0', '#5FD3BF', '#D79A45'],
           });
         } catch {
           // ignore
@@ -201,172 +195,169 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Top Banner / Metrics HUD */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Metric 1 */}
-        <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Cyber Resilience
-            </span>
-            <Award className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{resilienceScore}</span>
-            <span className="text-xs text-slate-400">/ 100</span>
-          </div>
-          <div className="mt-2 w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all duration-500"
-              style={{ width: `${resilienceScore}%` }}
-            />
-          </div>
+      {/* Postrix Command Panel with 4 Telemetry Metrics */}
+      <section className="xh-panel">
+        <div className="xh-kicker">
+          <span className="k">Zero-Knowledge Operational Habit &amp; Posture Telemetry</span>
+          <span className="tag">AES-GCM 256-Bit · Client-Side Encrypted</span>
         </div>
 
-        {/* Metric 2 */}
-        <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-                Daily Defense Habits
-              </span>
-              <CheckCircle className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
+          {/* Metric 1 */}
+          <div className="xh-metric">
+            <div className="lbl">
+              <span>01 · Cyber Resilience</span>
+              <Award className="w-3.5 h-3.5 text-[#5FD3BF]" />
             </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-3xl font-black text-white">
+            <div className="num hi">
+              {resilienceScore}
+              <span className="text-xs font-normal text-[#A9B7BF] ml-1">/ 100</span>
+            </div>
+            <div className="mt-2.5 w-full h-1.5 bg-[#081420] rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#2BB5A0] transition-all duration-500"
+                style={{ width: `${resilienceScore}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Metric 2 with Radial Progress Bar */}
+          <div className="xh-metric flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="lbl !mb-1.5">
+                <span>02 · Daily Habits</span>
+              </div>
+              <div className="num">
                 {completedTodayCount}
-              </span>
-              <span className="text-xs text-slate-400">/ {userData.habits.length} done</span>
-            </div>
-            <p className="mt-1 text-[11px] text-slate-400 font-mono">
-              {todayCompliancePct === 100
-                ? 'All daily routines secured'
-                : `${userData.habits.length - completedTodayCount} remaining today`}
-            </p>
-          </div>
-
-          {/* Radial Progress Bar */}
-          <div
-            className="relative w-16 h-16 shrink-0 flex items-center justify-center"
-            role="progressbar"
-            aria-valuenow={todayCompliancePct}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label="Percentage of completed habits for today"
-          >
-            <svg className="w-16 h-16 -rotate-90 transform" viewBox="0 0 64 64">
-              <defs>
-                <linearGradient id="habitRadialGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="100%" stopColor="#06b6d4" />
-                </linearGradient>
-              </defs>
-              <circle
-                cx="32"
-                cy="32"
-                r="26"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="6"
-                className="text-slate-800"
-              />
-              <circle
-                cx="32"
-                cy="32"
-                r="26"
-                fill="none"
-                stroke="url(#habitRadialGrad)"
-                strokeWidth="6"
-                strokeLinecap="round"
-                strokeDasharray={2 * Math.PI * 26}
-                strokeDashoffset={
-                  2 * Math.PI * 26 * (1 - Math.min(100, Math.max(0, todayCompliancePct)) / 100)
-                }
-                className="transition-all duration-500 ease-out"
-              />
-            </svg>
-            <span className="absolute text-xs font-mono font-bold text-cyan-300">
-              {todayCompliancePct}%
-            </span>
-          </div>
-        </div>
-
-        {/* Metric 3 */}
-        <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Discipline Streak
-            </span>
-            <Flame className="w-4 h-4 text-amber-400" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{avgStreak}</span>
-            <span className="text-xs text-slate-400">days avg</span>
-          </div>
-          <p className="mt-1 text-[11px] text-emerald-400 font-mono">
-            Unbroken operational cadence
-          </p>
-        </div>
-
-        {/* Metric 4 */}
-        <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Deep Threat Hunting
-            </span>
-            <Clock className="w-4 h-4 text-indigo-400" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{totalFocusMinutes}</span>
-            <span className="text-xs text-slate-400">min logged</span>
-          </div>
-          <p className="mt-1 text-[11px] text-slate-400 font-mono">
-            {userData.productivitySessions?.length || 0} secure sessions
-          </p>
-        </div>
-      </div>
-
-      {/* Main Grid: Habits List on Left (2 cols), Threat Hunting Timer on Right (1 col) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Habits Column (2 spans) */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-slate-900/70 border border-slate-800">
-            <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                Operational Security Routines
-              </h2>
-              <p className="text-xs text-slate-400">
-                Encrypted with AES-GCM 256. Click to toggle daily completion.
+                <span className="text-xs font-normal text-[#A9B7BF] ml-1">
+                  / {userData.habits.length} done
+                </span>
+              </div>
+              <p>
+                {todayCompliancePct === 100
+                  ? 'All daily routines secured'
+                  : `${userData.habits.length - completedTodayCount} remaining today`}
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-medium flex items-center gap-1.5 transition"
-              >
-                <Plus className="w-3.5 h-3.5" /> New Routine
-              </button>
+            {/* Radial Progress Bar */}
+            <div
+              className="relative w-16 h-16 shrink-0 flex items-center justify-center"
+              role="progressbar"
+              aria-valuenow={todayCompliancePct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Percentage of completed habits for today"
+            >
+              <svg className="w-16 h-16 -rotate-90 transform" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="habitRadialGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#2BB5A0" />
+                    <stop offset="100%" stopColor="#5FD3BF" />
+                  </linearGradient>
+                </defs>
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="26"
+                  fill="none"
+                  stroke="#081420"
+                  strokeWidth="6"
+                />
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="26"
+                  fill="none"
+                  stroke="url(#habitRadialGrad)"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 26}
+                  strokeDashoffset={
+                    2 * Math.PI * 26 * (1 - Math.min(100, Math.max(0, todayCompliancePct)) / 100)
+                  }
+                  className="transition-all duration-500 ease-out"
+                />
+              </svg>
+              <span className="absolute text-xs font-mono font-semibold text-[#5FD3BF] tabular-nums">
+                {todayCompliancePct}%
+              </span>
             </div>
           </div>
 
+          {/* Metric 3 */}
+          <div className="xh-metric">
+            <div className="lbl">
+              <span>03 · Discipline Streak</span>
+              <Flame className="w-3.5 h-3.5 text-[#EBC385]" />
+            </div>
+            <div className="num">
+              {avgStreak}
+              <span className="text-xs font-normal text-[#A9B7BF] ml-1.5">days avg</span>
+            </div>
+            <p>Unbroken operational cadence</p>
+          </div>
+
+          {/* Metric 4 */}
+          <div className="xh-metric">
+            <div className="lbl">
+              <span>04 · Threat Hunting</span>
+              <Clock className="w-3.5 h-3.5 text-[#5FD3BF]" />
+            </div>
+            <div className="num hi">
+              {totalFocusMinutes}
+              <span className="text-xs font-normal text-[#A9B7BF] ml-1.5">min logged</span>
+            </div>
+            <p>{userData.productivitySessions?.length || 0} encrypted focus sessions</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Grid: Habits List on Left (2 cols), Threat Hunting Timer on Right (1 col) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Habits Column (2 spans) — Crisp Postrix Paper Card */}
+        <section className="lg:col-span-2 bg-white border border-[#D9DDD3] rounded-xl p-6 space-y-5 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[#0E2238] text-[#5FD3BF] flex items-center justify-center shrink-0 mt-0.5">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="rm-kicker">01 / Zero-Knowledge Daily Defense Checklist</span>
+                <h2 className="text-lg font-semibold text-[#16232F]">
+                  Operational Security Routines
+                </h2>
+                <p className="text-xs text-[#4B5A66] mt-0.5">
+                  Encrypted locally with AES-GCM 256-bit. Click any control to toggle daily completion.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowAddModal(true)}
+              className="px-3.5 py-2 rounded-lg bg-[#0E2238] hover:bg-[#16232F] text-[#F3F5F1] text-xs font-medium flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5 text-[#5FD3BF]" />
+              <span>New Routine</span>
+            </button>
+          </div>
+
           {/* Filter Bar */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
             {['all', 'identity', 'threat_intel', 'code_audit', 'network', 'health_opsec'].map(
               (cat) => (
                 <button
                   key={cat}
+                  type="button"
                   onClick={() => setFilterCategory(cat)}
-                  className={`px-3 py-1 rounded-lg capitalize whitespace-nowrap transition border ${
+                  className={`px-3 py-1.5 rounded-lg capitalize whitespace-nowrap transition font-mono text-xs cursor-pointer border ${
                     filterCategory === cat
-                      ? 'bg-slate-800 text-emerald-400 border-emerald-500/40 font-medium'
-                      : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                      ? 'bg-[#0E2238] text-[#5FD3BF] border-[#0E2238] font-medium'
+                      : 'bg-[#F3F5F1] text-[#4B5A66] border-[#D9DDD3] hover:text-[#16232F]'
                   }`}
                 >
-                  {cat === 'all'
-                    ? 'All Routines'
-                    : cat.replace('_', ' ')}
+                  {cat === 'all' ? 'All Routines' : cat.replace('_', ' ')}
                 </button>
               )
             )}
@@ -380,74 +371,77 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
                 <div
                   key={habit.id}
                   onClick={() => handleToggleHabit(habit.id)}
-                  className={`group p-4 rounded-2xl border transition-all cursor-pointer flex items-start justify-between gap-4 select-none ${
+                  className={`group p-4 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-4 select-none ${
                     isDone
-                      ? 'bg-emerald-950/20 border-emerald-500/40 shadow-sm'
-                      : 'bg-slate-900/60 hover:bg-slate-900/90 border-slate-800/80 hover:border-slate-700'
+                      ? 'bg-emerald-50/70 border-emerald-300'
+                      : 'bg-[#F3F5F1]/60 hover:bg-[#F3F5F1] border-[#D9DDD3] hover:border-[#C7CDC0]'
                   }`}
                 >
                   <div className="flex items-start gap-3.5">
                     <button
                       type="button"
-                      className="mt-0.5 text-slate-500 group-hover:text-slate-300 transition shrink-0"
+                      className="mt-0.5 text-[#4B5A66] group-hover:text-[#16232F] transition shrink-0"
                     >
                       {isDone ? (
-                        <CheckCircle className="w-5 h-5 text-emerald-400 fill-emerald-500/20" />
+                        <CheckCircle className="w-5 h-5 text-emerald-700 fill-emerald-100" />
                       ) : (
-                        <Circle className="w-5 h-5 text-slate-600 group-hover:text-slate-400" />
+                        <Circle className="w-5 h-5 text-slate-400 group-hover:text-slate-600" />
                       )}
                     </button>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span
                           className={`text-sm font-semibold ${
-                            isDone ? 'line-through text-slate-400' : 'text-slate-100'
+                            isDone ? 'line-through text-[#4B5A66]' : 'text-[#16232F]'
                           }`}
                         >
                           {habit.title}
                         </span>
                         <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded-full uppercase border ${
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded uppercase border font-semibold ${
                             habit.priority === 'CRITICAL'
-                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                              ? 'bg-red-50 text-red-800 border-red-200'
                               : habit.priority === 'HIGH'
-                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                              : 'bg-slate-800 text-slate-400 border-slate-700'
+                              ? 'bg-amber-50 text-amber-800 border-amber-200'
+                              : 'bg-slate-100 text-slate-700 border-slate-300'
                           }`}
                         >
                           {habit.priority}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                      <p className="text-xs text-[#4B5A66] mt-1 leading-relaxed">
                         {habit.description}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5 font-mono text-xs text-amber-400 shrink-0">
-                    <Flame className="w-4 h-4 fill-amber-400/20" />
+                  <div className="flex items-center gap-1.5 font-mono text-xs text-[#D79A45] font-semibold shrink-0 tabular-nums">
+                    <Flame className="w-4 h-4 fill-[#D79A45]/20" />
                     <span>{habit.streak}d</span>
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
+        </section>
 
         {/* Right Column: Deep Work / Threat Hunting Pomodoro Timer */}
         <div className="space-y-4">
-          <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl relative overflow-hidden">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-mono uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
-                <Activity className="w-4 h-4" /> Threat Hunting Focus Block
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+          <div className="bg-white border border-[#D9DDD3] rounded-xl p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div>
+                <span className="rm-kicker">02 / Focus Telemetry</span>
+                <h3 className="text-sm font-semibold text-[#16232F] flex items-center gap-1.5">
+                  <Activity className="w-4 h-4 text-[#0E2238]" /> Threat Hunting Focus Block
+                </h3>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
                 E2EE Notes
               </span>
             </div>
 
             {/* Presets */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="grid grid-cols-3 gap-2">
               {[
                 { label: '25m Sprint', secs: 25 * 60 },
                 { label: '50m Deep', secs: 50 * 60 },
@@ -455,12 +449,13 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
               ].map((p) => (
                 <button
                   key={p.label}
+                  type="button"
                   disabled={isTimerRunning}
                   onClick={() => setTimerSeconds(p.secs)}
-                  className={`py-1.5 px-2 rounded-xl text-xs font-mono border transition ${
+                  className={`py-1.5 px-2 rounded-lg text-xs font-mono border transition cursor-pointer ${
                     timerSeconds === p.secs
-                      ? 'bg-indigo-600/30 text-indigo-300 border-indigo-500/50'
-                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                      ? 'bg-[#0E2238] text-[#5FD3BF] border-[#0E2238] font-medium'
+                      : 'bg-[#F3F5F1] text-[#4B5A66] border-[#D9DDD3] hover:text-[#16232F]'
                   }`}
                 >
                   {p.label}
@@ -468,24 +463,25 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
               ))}
             </div>
 
-            {/* Timer Display */}
-            <div className="text-center py-6 bg-slate-950/70 rounded-2xl border border-slate-800/80 mb-4">
-              <div className="text-5xl font-mono font-bold tracking-tight text-white drop-shadow">
+            {/* Dark Instrument Timer Display */}
+            <div className="text-center py-6 bg-[#081420] rounded-xl border border-[#3E6E86]/40">
+              <div className="text-5xl font-mono font-semibold tracking-tight text-[#EEF3F1] tabular-nums">
                 {formatTime(timerSeconds)}
               </div>
-              <p className="text-xs text-slate-400 mt-2 capitalize font-mono">
+              <p className="text-xs text-[#5FD3BF] mt-2 capitalize font-mono">
                 Mode: {selectedSessionType.replace('_', ' ')}
               </p>
             </div>
 
             {/* Controls */}
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => setIsTimerRunning(!isTimerRunning)}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition ${
+                className={`flex-1 py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer ${
                   isTimerRunning
-                    ? 'bg-amber-600 hover:bg-amber-500 text-white'
-                    : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-950'
+                    ? 'bg-[#D79A45] hover:bg-[#EBC385] text-[#081420]'
+                    : 'bg-[#0E2238] hover:bg-[#16232F] text-[#F3F5F1]'
                 }`}
               >
                 {isTimerRunning ? (
@@ -494,16 +490,17 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
                   </>
                 ) : (
                   <>
-                    <Play className="w-4 h-4 fill-white" /> Start Threat Hunt
+                    <Play className="w-4 h-4 fill-current" /> Start Threat Hunt
                   </>
                 )}
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setIsTimerRunning(false);
                   setTimerSeconds(25 * 60);
                 }}
-                className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+                className="p-2.5 rounded-lg bg-[#F3F5F1] hover:bg-[#E9ECE6] text-[#16232F] border border-[#D9DDD3] transition cursor-pointer"
                 title="Reset timer"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -511,20 +508,20 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
             </div>
 
             {/* Session Type Select & Encrypted Notes */}
-            <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
-              <label className="text-slate-400 font-medium block">Session Category:</label>
+            <div className="space-y-2.5 pt-3 border-t border-slate-200 text-xs">
+              <label className="text-[#4B5A66] font-medium block">Session Category:</label>
               <select
                 value={selectedSessionType}
                 onChange={(e: any) => setSelectedSessionType(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 outline-none focus:border-indigo-500"
+                className="w-full bg-[#F3F5F1] border border-[#C7CDC0] rounded-lg px-3 py-2 text-[#16232F] outline-none focus:border-[#0E2238]"
               >
-                <option value="threat_hunting">Threat Hunting & Log Correlation</option>
-                <option value="incident_triage">Incident Response & Triage</option>
-                <option value="code_audit">Security Code Review & Pentest</option>
-                <option value="deep_work">Reverse Engineering & Deep Work</option>
+                <option value="threat_hunting">Threat Hunting &amp; Log Correlation</option>
+                <option value="incident_triage">Incident Response &amp; Triage</option>
+                <option value="code_audit">Security Code Review &amp; Pentest</option>
+                <option value="deep_work">Reverse Engineering &amp; Deep Work</option>
               </select>
 
-              <label className="text-slate-400 font-medium block mt-2">
+              <label className="text-[#4B5A66] font-medium block mt-2">
                 Encrypted Session Reflection (Zero-Knowledge):
               </label>
               <textarea
@@ -532,38 +529,41 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
                 onChange={(e) => setSessionNotes(e.target.value)}
                 placeholder="Log IOCs, investigated alerts, or hardening steps (encrypted with master key)..."
                 rows={3}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 placeholder-slate-600 outline-none focus:border-indigo-500 resize-none"
+                className="w-full bg-[#F3F5F1] border border-[#C7CDC0] rounded-lg p-2.5 text-xs text-[#16232F] placeholder-[#7F909A] outline-none focus:border-[#0E2238] resize-none"
               />
 
               <button
+                type="button"
                 onClick={handleLogFocusSession}
-                className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition border border-slate-700 flex items-center justify-center gap-1.5"
+                className="w-full py-2 rounded-lg bg-[#2BB5A0] hover:bg-[#5FD3BF] text-[#04211B] text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                <CheckCircle className="w-3.5 h-3.5" />
                 Commit Encrypted Session Log
               </button>
             </div>
           </div>
 
           {/* Recent Encrypted Sessions */}
-          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5 font-mono">
-              <Clock className="w-3.5 h-3.5 text-cyan-400" /> Recent Encrypted Logs
+          <div className="bg-white border border-[#D9DDD3] rounded-xl p-5 shadow-xs">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#4B5A66] mb-3 flex items-center gap-1.5 font-mono">
+              <Clock className="w-3.5 h-3.5 text-[#0E2238]" /> Recent Encrypted Logs
             </h3>
             <div className="space-y-2 text-xs">
               {(userData.productivitySessions || []).slice(0, 3).map((sess) => (
                 <div
                   key={sess.id}
-                  className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-1"
+                  className="p-3 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3] space-y-1"
                 >
-                  <div className="flex items-center justify-between text-slate-400 text-[11px] font-mono">
-                    <span className="capitalize text-indigo-300">
+                  <div className="flex items-center justify-between text-[#4B5A66] text-[11px] font-mono">
+                    <span className="capitalize font-semibold text-[#0E2238]">
                       {sess.sessionType.replace('_', ' ')}
                     </span>
-                    <span>{sess.durationMinutes} min &bull; {sess.date}</span>
+                    <span>
+                      {sess.durationMinutes} min · {sess.date}
+                    </span>
                   </div>
-                  <p className="text-slate-300 text-xs leading-relaxed italic">
-                    "{sess.notes}"
+                  <p className="text-[#16232F] text-xs leading-relaxed italic">
+                    &ldquo;{sess.notes}&rdquo;
                   </p>
                 </div>
               ))}
@@ -574,18 +574,19 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
 
       {/* Add Custom Habit Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 text-slate-100 shadow-2xl">
-            <h3 className="text-base font-bold text-white mb-1">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#081420]/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-white border border-[#C7CDC0] rounded-xl p-6 text-[#16232F] shadow-2xl">
+            <span className="rm-kicker">New Zero-Knowledge Control</span>
+            <h3 className="text-base font-bold text-[#16232F] mb-1">
               Add Defensive Habit / Routine
             </h3>
-            <p className="text-xs text-slate-400 mb-4">
+            <p className="text-xs text-[#4B5A66] mb-4">
               Stored exclusively in client-side AES-GCM 256-bit ciphertext.
             </p>
 
             <form onSubmit={handleAddHabit} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">
+                <label className="block text-[#16232F] font-medium mb-1">
                   Routine Title
                 </label>
                 <input
@@ -593,13 +594,13 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Invalidate Stale AWS CLI Tokens"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 outline-none focus:border-emerald-500"
+                  className="w-full bg-[#F3F5F1] border border-[#C7CDC0] rounded-lg px-3 py-2 text-[#16232F] outline-none focus:border-[#0E2238]"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">
+                <label className="block text-[#16232F] font-medium mb-1">
                   Description / Verification Steps
                 </label>
                 <textarea
@@ -607,32 +608,32 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="e.g. Run aws sts get-caller-identity and clear session cache..."
                   rows={2}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-emerald-500 resize-none"
+                  className="w-full bg-[#F3F5F1] border border-[#C7CDC0] rounded-lg p-2.5 text-[#16232F] outline-none focus:border-[#0E2238] resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Category</label>
+                  <label className="block text-[#16232F] font-medium mb-1">Category</label>
                   <select
                     value={newCategory}
                     onChange={(e: any) => setNewCategory(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-200 outline-none focus:border-emerald-500"
+                    className="w-full bg-[#F3F5F1] border border-[#C7CDC0] rounded-lg px-2.5 py-2 text-[#16232F] outline-none focus:border-[#0E2238]"
                   >
-                    <option value="identity">Identity & Access</option>
+                    <option value="identity">Identity &amp; Access</option>
                     <option value="threat_intel">Threat Intel</option>
-                    <option value="code_audit">Code & Dependency</option>
-                    <option value="network">Network & Egress</option>
-                    <option value="health_opsec">OpSec & Backups</option>
+                    <option value="code_audit">Code &amp; Dependency</option>
+                    <option value="network">Network &amp; Egress</option>
+                    <option value="health_opsec">OpSec &amp; Backups</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Priority</label>
+                  <label className="block text-[#16232F] font-medium mb-1">Priority</label>
                   <select
                     value={newPriority}
                     onChange={(e: any) => setNewPriority(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-200 outline-none focus:border-emerald-500"
+                    className="w-full bg-[#F3F5F1] border border-[#C7CDC0] rounded-lg px-2.5 py-2 text-[#16232F] outline-none focus:border-[#0E2238]"
                   >
                     <option value="CRITICAL">Critical</option>
                     <option value="HIGH">High</option>
@@ -641,17 +642,17 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium"
+                  className="px-3.5 py-2 rounded-lg bg-[#F3F5F1] hover:bg-[#E9ECE6] text-[#16232F] border border-[#C7CDC0] font-medium cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-md shadow-emerald-950"
+                  className="px-4 py-2 rounded-lg bg-[#0E2238] hover:bg-[#16232F] text-[#F3F5F1] font-medium cursor-pointer"
                 >
                   Save Encrypted Routine
                 </button>

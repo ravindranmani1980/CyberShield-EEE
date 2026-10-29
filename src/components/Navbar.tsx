@@ -3,7 +3,6 @@ import {
   Shield,
   Lock,
   Unlock,
-  CheckCircle2,
   Mail,
   Target,
   Bug,
@@ -16,6 +15,7 @@ import {
   Check,
   Gamepad2,
   EyeOff,
+  ServerOff,
 } from 'lucide-react';
 
 export type ActiveTab =
@@ -47,147 +47,226 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
+
   const navItems: { id: ActiveTab; label: string; icon: React.ReactNode }[] = [
-    { id: 'habits', label: 'E2EE Habits & Focus', icon: <CalendarCheck className="w-4 h-4" /> },
-    { id: 'email_scanner', label: 'Email Threat Filter', icon: <Mail className="w-4 h-4" /> },
-    { id: 'phishing', label: 'Phishing Campaigns', icon: <Target className="w-4 h-4" /> },
-    { id: 'vulnerability_lab', label: 'Vulnerability Lab', icon: <Bug className="w-4 h-4" /> },
-    { id: 'vishing', label: 'Vishing & OTP Defense', icon: <PhoneCall className="w-4 h-4" /> },
-    { id: 'breach_predictor', label: 'ML Breach Predictor', icon: <BrainCircuit className="w-4 h-4" /> },
-    { id: 'training_game', label: 'Threat Blitz Game', icon: <Gamepad2 className="w-4 h-4 text-amber-400" /> },
+    { id: 'habits', label: 'E2EE Habits', icon: <CalendarCheck className="w-3.5 h-3.5" /> },
+    { id: 'email_scanner', label: 'Email Filter', icon: <Mail className="w-3.5 h-3.5" /> },
+    { id: 'phishing', label: 'Phishing Sim', icon: <Target className="w-3.5 h-3.5" /> },
+    { id: 'vulnerability_lab', label: 'Vulnerability Lab', icon: <Bug className="w-3.5 h-3.5" /> },
+    { id: 'vishing', label: 'Vishing Defense', icon: <PhoneCall className="w-3.5 h-3.5" /> },
+    { id: 'breach_predictor', label: 'Breach Predictor', icon: <BrainCircuit className="w-3.5 h-3.5" /> },
+    { id: 'training_game', label: 'Threat Blitz', icon: <Gamepad2 className="w-3.5 h-3.5 text-[#EBC385]" /> },
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
-        {/* Brand & Author */}
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-slate-950 shadow-md shadow-emerald-500/20">
-            <Shield className="w-5 h-5 fill-slate-950 stroke-white" />
+    <>
+      {/* Primary Postrix-Style Sticky Site Header */}
+      <header className="rm-site-header px-4 sm:px-6 no-print">
+        <div className="max-w-[1440px] mx-auto flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 min-h-[64px] py-2">
+          {/* Brand Mark */}
+          <a
+            href="#habits"
+            onClick={(e) => {
+              e.preventDefault();
+              onSelectTab('habits');
+            }}
+            className="rm-brand whitespace-nowrap shrink-0"
+          >
+            <span className="rm-mono-mark" aria-hidden="true">
+              RM
+            </span>
+            <span>
+              Maniq <span className="accent">CyberShield E2EE</span>
+            </span>
+          </a>
+
+          {/* Main Navigation Tabs */}
+          <nav
+            aria-label="Main navigation"
+            className="flex items-center gap-4 xl:gap-6 overflow-x-auto no-scrollbar order-3 lg:order-2 w-full lg:w-auto pb-1 lg:pb-0"
+          >
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onSelectTab(item.id)}
+                aria-current={activeTab === item.id ? 'page' : undefined}
+                className={`rm-navlink whitespace-nowrap shrink-0 cursor-pointer inline-flex items-center gap-1.5 ${
+                  activeTab === item.id ? 'rm-navlink-active' : ''
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </nav>
+
+          {/* Right Action Controls */}
+          <div className="flex items-center gap-2 shrink-0 order-2 lg:order-3">
+            <button
+              type="button"
+              onClick={() => onSelectTab('disclaimer')}
+              className={`xh-btn whitespace-nowrap shrink-0 ${
+                activeTab === 'disclaimer'
+                  ? '!border-[#5FD3BF] !bg-[#5FD3BF]/15 !text-[#5FD3BF]'
+                  : ''
+              }`}
+              title="Privacy Disclaimer: We do not store or record any information entered here"
+            >
+              <EyeOff className="w-3.5 h-3.5 text-[#5FD3BF]" />
+              <span className="hidden sm:inline">Disclaimer</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowShareModal(true)}
+              className="xh-btn whitespace-nowrap shrink-0"
+              title="Share with friends (no Google login needed)"
+            >
+              <Share2 className="w-3.5 h-3.5 text-[#EBC385]" />
+              <span className="hidden md:inline">Share App</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenPasswordGenerator}
+              className="xh-btn whitespace-nowrap shrink-0"
+              title="Open Cryptographic Password Generator"
+            >
+              <Key className="w-3.5 h-3.5 text-[#5FD3BF]" />
+              <span className="hidden md:inline">Pass Gen</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenVaultModal}
+              className={`xh-btn whitespace-nowrap shrink-0 ${
+                isLocked || !hasVault
+                  ? '!border-[#D79A45]/60 !bg-[#D79A45]/15 !text-[#EBC385]'
+                  : 'primary'
+              }`}
+            >
+              {isLocked || !hasVault ? (
+                <>
+                  <Lock className="w-3.5 h-3.5 text-[#EBC385]" />
+                  <span>{hasVault ? 'Vault Locked' : 'Setup Vault'}</span>
+                </>
+              ) : (
+                <>
+                  <Unlock className="w-3.5 h-3.5" />
+                  <span>E2EE Vault Active</span>
+                </>
+              )}
+            </button>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold text-sm sm:text-base tracking-tight text-white">
-                Maniq CyberShield <span className="text-emerald-400">E2EE</span>
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-                v2.6 SEC-OPS
+        </div>
+      </header>
+
+      {/* Secondary Postrix-Style Telemetry & Governance Context Bar */}
+      <div className="bg-[#0D1C2D] text-[#EEF3F1] border-b border-[#3E6E86]/35 px-4 sm:px-6 py-2.5 no-print">
+        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2 text-xs">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-1.5 font-mono text-[#EEF3F1]">
+              <Shield className="w-3.5 h-3.5 text-[#5FD3BF] shrink-0" />
+              <span className="font-sans text-[#A9B7BF]">Encryption Engine:</span>
+              <strong className="font-semibold text-white">AES-GCM 256-bit</strong>
+              <span className="text-[#5FD3BF] font-semibold">
+                (PBKDF2-SHA-256 · Zero-Knowledge)
               </span>
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-              <span>Zero-Knowledge AES-GCM 256</span>
-              <span>&bull;</span>
-              <span>Author:</span>
+
+            <span className="text-[#3E6E86] hidden sm:inline">·</span>
+
+            <div className="flex items-center gap-1.5 text-[#C6D1D6]">
+              <ServerOff className="w-3.5 h-3.5 text-[#EBC385] shrink-0" />
+              <span className="text-[#A9B7BF]">Data Policy:</span>
+              <strong className="font-medium text-white">
+                0 Bytes Stored or Recorded
+              </strong>
+            </div>
+
+            <span className="text-[#3E6E86] hidden lg:inline">·</span>
+
+            <div className="hidden lg:flex items-center gap-1.5 text-[#C6D1D6]">
+              <span className="text-[#A9B7BF]">Author:</span>
               <a
                 href="https://www.ravindran.in"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-cyan-400 hover:text-cyan-300 font-medium underline-offset-2 hover:underline"
+                className="font-mono text-[#5FD3BF] hover:text-[#EBC385] underline underline-offset-4 transition-colors"
               >
-                Mani Ravindran (www.ravindran.in)
+                Mani Ravindran (ravindran.in)
               </a>
             </div>
           </div>
-        </div>
 
-        {/* Action Controls: Disclaimer, Share, Password Generator & Vault Status */}
-        <div className="flex items-center gap-2">
-          {/* Disclaimer Button */}
-          <button
-            onClick={() => onSelectTab('disclaimer')}
-            className={`px-3 py-1.5 rounded-xl border text-xs font-mono flex items-center gap-1.5 transition shadow-sm ${
-              activeTab === 'disclaimer'
-                ? 'border-emerald-400 bg-emerald-500/20 text-emerald-200'
-                : 'border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300'
-            }`}
-            title="Privacy Disclaimer: We do not store or record any information entered here"
-          >
-            <EyeOff className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="hidden sm:inline">Disclaimer</span>
-          </button>
-
-          {/* Share Button */}
-          <button
-            onClick={() => setShowShareModal(true)}
-            className="px-3 py-1.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 text-xs font-mono flex items-center gap-1.5 transition shadow-sm"
-            title="Share with friends (no Google login needed)"
-          >
-            <Share2 className="w-3.5 h-3.5 text-indigo-400" />
-            <span className="hidden sm:inline">Share App</span>
-          </button>
-
-          <button
-            onClick={onOpenPasswordGenerator}
-            className="px-3 py-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs font-mono flex items-center gap-1.5 transition shadow-sm"
-            title="Open Cryptographic Password Generator"
-          >
-            <Key className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">Password Generator</span>
-            <span className="sm:hidden">Pass Gen</span>
-          </button>
-
-          <button
-            onClick={onOpenVaultModal}
-            className={`px-3 py-1.5 rounded-xl border text-xs font-mono flex items-center gap-2 transition ${
-              isLocked || !hasVault
-                ? 'bg-rose-500/10 text-rose-300 border-rose-500/30 hover:bg-rose-500/20'
-                : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20'
-            }`}
-          >
-            {isLocked || !hasVault ? (
-              <>
-                <Lock className="w-3.5 h-3.5 text-rose-400" />
-                <span>{hasVault ? 'Vault Locked' : 'Setup Vault'}</span>
-              </>
-            ) : (
-              <>
-                <Unlock className="w-3.5 h-3.5 text-emerald-400" />
-                <span>E2EE Vault Active</span>
-              </>
-            )}
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="font-mono text-[11px] text-[#A9B7BF]">
+              Status:{' '}
+              <strong className={isLocked ? 'text-[#EBC385]' : 'text-[#5FD3BF]'}>
+                {isLocked ? 'VAULT LOCKED' : 'DECRYPTED IN RAM'}
+              </strong>
+            </span>
+            <span className="text-[#3E6E86]">·</span>
+            <button
+              type="button"
+              onClick={() => onSelectTab('disclaimer')}
+              className="text-[#5FD3BF] hover:text-[#EBC385] font-mono text-[11px] underline underline-offset-4 cursor-pointer transition-colors"
+            >
+              Privacy &amp; Non-Storage Disclaimer →
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Share with Friends Modal */}
       {showShareModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-slate-900 border border-indigo-500/40 rounded-3xl p-6 text-slate-100 shadow-2xl relative">
-            <div className="flex items-center justify-between mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#081420]/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-[#0D1C2D] border border-[#3E6E86]/60 rounded-xl p-6 text-[#EEF3F1] shadow-2xl relative">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#C9D3D9]/15">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-indigo-950/80 border border-indigo-500/40 text-indigo-400">
-                  <Share2 className="w-5 h-5" />
+                <div className="rm-mono-mark" aria-hidden="true">
+                  RM
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Share Maniq CyberShield E2EE</h3>
-                  <p className="text-xs text-slate-400">Direct public access &mdash; no Google login required</p>
+                  <h3 className="text-base font-bold text-[#EEF3F1] font-serif">
+                    Share Maniq <span className="text-[#D79A45]">CyberShield E2EE</span>
+                  </h3>
+                  <p className="text-xs text-[#A9B7BF]">
+                    Direct public access &mdash; no Google login required
+                  </p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setShowShareModal(false)}
-                className="text-slate-400 hover:text-white text-xs px-2.5 py-1 rounded-lg bg-slate-800"
+                className="xh-btn !py-1 !px-2.5 !text-xs"
               >
                 Close
               </button>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 mb-4 text-xs font-mono">
-              <div className="flex items-center justify-between text-slate-400">
+            <div className="p-3.5 rounded-lg bg-[#102236] border border-[#3E6E86]/40 space-y-2 mb-4 text-xs font-mono">
+              <div className="flex items-center justify-between text-[#A9B7BF]">
                 <span>Access Type:</span>
-                <span className="text-emerald-400 font-semibold">Public (No Google Auth Required)</span>
+                <span className="text-[#5FD3BF] font-semibold">
+                  Public (No Google Auth Required)
+                </span>
               </div>
-              <div className="flex items-center justify-between text-slate-400">
+              <div className="flex items-center justify-between text-[#A9B7BF]">
                 <span>Encryption:</span>
-                <span className="text-cyan-400 font-semibold">100% Client-Side WebCrypto</span>
+                <span className="text-[#EBC385] font-semibold">
+                  100% Client-Side WebCrypto
+                </span>
               </div>
-              <div className="flex items-center justify-between text-slate-400">
+              <div className="flex items-center justify-between text-[#A9B7BF]">
                 <span>Author:</span>
-                <span className="text-slate-200 font-semibold">Mani Ravindran</span>
+                <span className="text-[#EEF3F1] font-semibold">Mani Ravindran</span>
               </div>
             </div>
 
             <div className="space-y-2 mb-4 text-xs">
-              <label className="text-slate-300 font-medium block">
+              <label className="text-[#C6D1D6] font-medium block">
                 Public Shareable Link (Anyone with this link can access directly):
               </label>
               <div className="flex items-center gap-2">
@@ -195,19 +274,22 @@ export const Navbar: React.FC<NavbarProps> = ({
                   type="text"
                   readOnly
                   value="https://ais-pre-elolfngen6z6f37daibx6g-647805725217.us-east1.run.app"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-indigo-300 select-all outline-none"
+                  className="w-full bg-[#081420] border border-[#3E6E86]/50 rounded-lg px-3 py-2 text-xs font-mono text-[#5FD3BF] select-all outline-none"
                 />
                 <button
+                  type="button"
                   onClick={() => {
-                    navigator.clipboard.writeText("https://ais-pre-elolfngen6z6f37daibx6g-647805725217.us-east1.run.app");
+                    navigator.clipboard.writeText(
+                      'https://ais-pre-elolfngen6z6f37daibx6g-647805725217.us-east1.run.app'
+                    );
                     setCopiedShare(true);
                     setTimeout(() => setCopiedShare(false), 2500);
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs flex items-center gap-1.5 transition shrink-0 shadow-md shadow-indigo-950"
+                  className="xh-btn primary shrink-0"
                 >
                   {copiedShare ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <Check className="w-3.5 h-3.5" />
                       <span>Copied!</span>
                     </>
                   ) : (
@@ -219,43 +301,27 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               </div>
               {copiedShare && (
-                <p className="text-[11px] text-emerald-400 font-mono flex items-center gap-1">
+                <p className="text-[11px] text-[#5FD3BF] font-mono flex items-center gap-1">
                   <Check className="w-3.5 h-3.5" /> Link copied! Your friend can open this immediately without signing into Google.
                 </p>
               )}
             </div>
 
-            <div className="p-3 rounded-2xl bg-indigo-950/30 border border-indigo-500/20 text-xs text-slate-300 leading-relaxed mb-4">
-              <strong>Tip for sharing:</strong> Give them this public <code>ais-pre-...</code> link. When they open it, they can immediately use all tools (Email Scanner, Phishing Simulator, Vulnerability Lab, Vishing Trainer, Password Generator) and choose either <em>Instant Demo Vault</em> or set their own private passphrase.
+            <div className="p-3 rounded-lg bg-[#081420] border border-[#3E6E86]/40 text-xs text-[#C6D1D6] leading-relaxed mb-4">
+              <strong className="text-[#EBC385]">Tip for sharing:</strong> Give them this public{' '}
+              <code className="text-[#5FD3BF]">ais-pre-...</code> link. When they open it, they can immediately use all tools and choose either <em>Instant Demo Vault</em> or set their own private passphrase.
             </div>
 
             <button
+              type="button"
               onClick={() => setShowShareModal(false)}
-              className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition"
+              className="w-full xh-btn justify-center !py-2"
             >
               Done
             </button>
           </div>
         </div>
       )}
-
-      {/* Nav Tabs Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1 overflow-x-auto no-scrollbar pb-2 sm:pb-0 text-xs">
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onSelectTab(item.id)}
-            className={`px-3 py-2.5 font-medium whitespace-nowrap transition flex items-center gap-2 border-b-2 ${
-              activeTab === item.id
-                ? 'border-emerald-400 text-white font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </div>
-    </header>
+    </>
   );
 };

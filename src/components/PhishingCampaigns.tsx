@@ -1,21 +1,12 @@
 import React, { useState } from 'react';
 import {
-  Send,
-  Users,
   Target,
-  BarChart3,
   Plus,
   AlertOctagon,
   CheckCircle,
   Eye,
-  MousePointer,
-  Lock,
   Flag,
-  Sparkles,
   Info,
-  Shield,
-  Download,
-  AlertCircle,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PhishingCampaign, PhishingTemplate } from '../types';
@@ -23,7 +14,7 @@ import { INITIAL_CAMPAIGNS, PHISHING_TEMPLATES } from '../data/phishingCampaignD
 
 export const PhishingCampaigns: React.FC = () => {
   const [campaigns, setCampaigns] = useState<PhishingCampaign[]>(INITIAL_CAMPAIGNS);
-  const [templates, setTemplates] = useState<PhishingTemplate[]>(PHISHING_TEMPLATES);
+  const [templates] = useState<PhishingTemplate[]>(PHISHING_TEMPLATES);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string>(INITIAL_CAMPAIGNS[0].id);
 
   // New Campaign Modal
@@ -88,7 +79,6 @@ export const PhishingCampaigns: React.FC = () => {
 
   // Employee clicks simulated phishing link
   const handleSimulatedLinkClick = () => {
-    // Increment clickedLink count
     setCampaigns((prev) =>
       prev.map((c) => {
         if (c.id === activeCampaign.id) {
@@ -132,310 +122,302 @@ export const PhishingCampaigns: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner and Tabs */}
-      <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <Target className="w-5 h-5 text-rose-400" />
-            Social Phishing Campaign Simulation Engine
-          </h2>
-          <p className="text-xs text-slate-400">
-            Launch controlled social engineering campaigns to train employees and track interaction telemetry.
-          </p>
+      {/* Postrix Command Header & Telemetry */}
+      <section className="xh-panel">
+        <div className="xh-kicker">
+          <span className="k">Social Engineering Readiness &amp; Phishing Telemetry</span>
+          <span className="tag">Authorized Security Awareness Drill</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* View Mode Switcher */}
-          <div className="p-1 rounded-xl bg-slate-950 border border-slate-800 flex items-center text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-b border-[#C9D3D9]/12">
+          <div>
+            <h2 className="text-lg font-semibold text-[#EEF3F1] flex items-center gap-2">
+              <Target className="w-5 h-5 text-[#EBC385]" />
+              Social Phishing Campaign Simulation Engine
+            </h2>
+            <p className="text-xs text-[#A9B7BF] mt-0.5">
+              Launch controlled social engineering campaigns to train employees and track interaction telemetry.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
             <button
+              type="button"
               onClick={() => {
                 setActiveTab('manager');
                 setShowLearningBaitModal(false);
                 setReportedSuccess(false);
               }}
-              className={`px-3 py-1.5 rounded-lg transition font-medium ${
+              className={`xh-btn ${
                 activeTab === 'manager'
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                  : 'text-slate-400 hover:text-white'
+                  ? '!border-[#5FD3BF] !bg-[#5FD3BF]/15 !text-[#5FD3BF]'
+                  : ''
               }`}
             >
               Campaign Analytics
             </button>
             <button
+              type="button"
               onClick={() => {
                 setActiveTab('inbox_simulator');
                 setShowLearningBaitModal(false);
                 setReportedSuccess(false);
               }}
-              className={`px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1.5 ${
+              className={`xh-btn ${
                 activeTab === 'inbox_simulator'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                  : 'text-slate-400 hover:text-white'
+                  ? '!border-[#5FD3BF] !bg-[#5FD3BF]/15 !text-[#5FD3BF]'
+                  : ''
               }`}
             >
               <Eye className="w-3.5 h-3.5" />
-              Employee Inbox View
+              <span>Employee Inbox View</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowCreateModal(true)}
+              className="xh-btn primary"
+            >
+              <Plus className="w-4 h-4" />
+              <span>New Campaign</span>
             </button>
           </div>
-
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-lg shadow-rose-950"
-          >
-            <Plus className="w-4 h-4" /> New Campaign
-          </button>
         </div>
-      </div>
+
+        {/* 5 Telemetry Metric Cards inside xh-panel */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-4">
+          <div className="xh-metric">
+            <div className="lbl">
+              <span>01 · Dispatched</span>
+            </div>
+            <div className="num">{activeCampaign.metrics.emailsSent}</div>
+            <p>{activeCampaign.targetDepartment} Dept</p>
+          </div>
+
+          <div className="xh-metric">
+            <div className="lbl">
+              <span>02 · Open Rate</span>
+            </div>
+            <div className="num hi">{rates.openRate}%</div>
+            <p>{activeCampaign.metrics.opened} opened</p>
+          </div>
+
+          <div className="xh-metric">
+            <div className="lbl">
+              <span>03 · Click Rate</span>
+            </div>
+            <div className={`num ${rates.clickRate > 20 ? '!text-[#EBC385]' : ''}`}>
+              {rates.clickRate}%
+            </div>
+            <p>{activeCampaign.metrics.clickedLink} clicked link</p>
+          </div>
+
+          <div className="xh-metric">
+            <div className="lbl">
+              <span>04 · Compromised</span>
+            </div>
+            <div className="num !text-red-400">{rates.compromiseRate}%</div>
+            <p>{activeCampaign.metrics.submittedCredentials} creds entered</p>
+          </div>
+
+          <div className="xh-metric">
+            <div className="lbl">
+              <span>05 · Reported</span>
+            </div>
+            <div className="num hi">{rates.reportRate}%</div>
+            <p>{activeCampaign.metrics.reportedPhish} caught &amp; reported</p>
+          </div>
+        </div>
+      </section>
 
       {activeTab === 'manager' ? (
-        <>
-          {/* Telemetry Metrics for Selected Campaign */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5">
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800 text-xs">
-              <span className="text-slate-500 font-mono uppercase block text-[10px]">
-                Total Dispatched
-              </span>
-              <div className="text-2xl font-bold text-white mt-1">
-                {activeCampaign.metrics.emailsSent}
-              </div>
-              <span className="text-[11px] text-slate-400 font-mono">
-                {activeCampaign.targetDepartment} Dept
-              </span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left: Campaign List (4 cols) */}
+          <div className="lg:col-span-4 bg-white border border-[#D9DDD3] rounded-xl p-5 space-y-3 shadow-xs">
+            <div>
+              <span className="rm-kicker">01 / Active Drills</span>
+              <h3 className="text-sm font-semibold text-[#16232F]">Simulated Campaigns</h3>
             </div>
+            <div className="space-y-2">
+              {campaigns.map((c) => (
+                <div
+                  key={c.id}
+                  onClick={() => setSelectedCampaignId(c.id)}
+                  className={`p-3.5 rounded-lg border transition cursor-pointer ${
+                    selectedCampaignId === c.id
+                      ? 'bg-[#0E2238] text-[#EEF3F1] border-[#0E2238]'
+                      : 'bg-[#F3F5F1] hover:bg-[#E9ECE6] text-[#16232F] border-[#D9DDD3]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-xs">{c.name}</span>
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded uppercase border font-semibold ${
+                        selectedCampaignId === c.id
+                          ? 'bg-[#2BB5A0]/20 text-[#5FD3BF] border-[#5FD3BF]/40'
+                          : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      }`}
+                    >
+                      {c.status}
+                    </span>
+                  </div>
 
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800 text-xs">
-              <span className="text-slate-500 font-mono uppercase block text-[10px]">
-                Open Rate
-              </span>
-              <div className="text-2xl font-bold text-cyan-400 mt-1">
-                {rates.openRate}%
-              </div>
-              <span className="text-[11px] text-slate-400 font-mono">
-                {activeCampaign.metrics.opened} opened
-              </span>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800 text-xs">
-              <span className="text-slate-500 font-mono uppercase block text-[10px]">
-                Click Rate
-              </span>
-              <div
-                className={`text-2xl font-bold mt-1 ${
-                  rates.clickRate > 20 ? 'text-rose-400' : 'text-amber-400'
-                }`}
-              >
-                {rates.clickRate}%
-              </div>
-              <span className="text-[11px] text-slate-400 font-mono">
-                {activeCampaign.metrics.clickedLink} clicked link
-              </span>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800 text-xs">
-              <span className="text-slate-500 font-mono uppercase block text-[10px]">
-                Compromised (Entered Creds)
-              </span>
-              <div className="text-2xl font-bold text-rose-500 mt-1">
-                {rates.compromiseRate}%
-              </div>
-              <span className="text-[11px] text-slate-400 font-mono">
-                {activeCampaign.metrics.submittedCredentials} credentials entered
-              </span>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800 text-xs">
-              <span className="text-slate-500 font-mono uppercase block text-[10px]">
-                Reported by Staff
-              </span>
-              <div className="text-2xl font-bold text-emerald-400 mt-1">
-                {rates.reportRate}%
-              </div>
-              <span className="text-[11px] text-emerald-300 font-mono">
-                {activeCampaign.metrics.reportedPhish} caught & reported
-              </span>
-            </div>
-          </div>
-
-          {/* Campaign Selector & Details */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left: Campaign List (4 cols) */}
-            <div className="lg:col-span-4 space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
-                Simulated Campaigns
-              </h3>
-              <div className="space-y-2">
-                {campaigns.map((c) => (
                   <div
-                    key={c.id}
-                    onClick={() => setSelectedCampaignId(c.id)}
-                    className={`p-3.5 rounded-2xl border transition cursor-pointer ${
-                      selectedCampaignId === c.id
-                        ? 'bg-rose-950/20 border-rose-500/40 shadow-sm'
-                        : 'bg-slate-900/60 hover:bg-slate-900/90 border-slate-800'
+                    className={`mt-2 flex items-center justify-between text-[11px] font-mono ${
+                      selectedCampaignId === c.id ? 'text-[#A9B7BF]' : 'text-[#4B5A66]'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-xs text-white">
-                        {c.name}
-                      </span>
-                      <span
-                        className={`text-[10px] font-mono px-2 py-0.5 rounded-full uppercase border ${
-                          c.status === 'Active'
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                            : 'bg-slate-800 text-slate-400 border-slate-700'
-                        }`}
-                      >
-                        {c.status}
-                      </span>
-                    </div>
-
-                    <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                      <span>Target: {c.targetDepartment}</span>
-                      <span>Difficulty: {c.difficulty}</span>
-                    </div>
+                    <span>Target: {c.targetDepartment}</span>
+                    <span>Difficulty: {c.difficulty}</span>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
+          </div>
 
-            {/* Right: Selected Campaign Inspection & Template Preview (8 cols) */}
-            <div className="lg:col-span-8 space-y-4">
-              <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-bold text-white">
-                      {activeCampaign.name}
-                    </h3>
-                    <p className="text-slate-400 text-xs">
-                      Dispatched to {activeCampaign.targetDepartment} &bull; Created{' '}
-                      {activeCampaign.createdAt}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setActiveTab('inbox_simulator')}
-                    className="px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-medium flex items-center gap-1.5 transition text-xs shadow-md shadow-cyan-950"
-                  >
-                    <Eye className="w-3.5 h-3.5" /> Test In Employee Inbox
-                  </button>
-                </div>
-
-                {/* Template Info Card */}
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2">
-                  <div className="flex justify-between items-center text-slate-400">
-                    <span className="font-mono text-[11px]">Template:</span>
-                    <span className="text-cyan-400 font-medium">
-                      {activeTemplate.name}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-slate-400">
-                    <span className="font-mono text-[11px]">Sender:</span>
-                    <span className="text-slate-200 font-mono text-[11px]">
-                      {activeTemplate.senderName} &lt;{activeTemplate.senderAddress}&gt;
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-slate-400">
-                    <span className="font-mono text-[11px]">Subject:</span>
-                    <span className="text-slate-200">{activeTemplate.subject}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-slate-400">
-                    <span className="font-mono text-[11px]">Simulated Bait URL:</span>
-                    <span className="text-rose-400 font-mono text-[11px] truncate max-w-xs">
-                      {activeTemplate.targetLandingBait}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Educational Telltale Flags */}
+          {/* Right: Selected Campaign Inspection & Template Preview (8 cols) */}
+          <div className="lg:col-span-8 space-y-4">
+            <div className="bg-white border border-[#D9DDD3] rounded-xl p-6 text-xs space-y-4 shadow-xs">
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200">
                 <div>
-                  <h4 className="font-bold text-slate-300 font-mono uppercase text-[11px] mb-2 flex items-center gap-1.5">
-                    <Info className="w-4 h-4 text-amber-400" /> Telltale Indicators Employees Must Catch
-                  </h4>
-                  <ul className="space-y-1.5">
-                    {activeTemplate.telltaleIndicators.map((ind, i) => (
-                      <li
-                        key={i}
-                        className="p-2 rounded-xl bg-slate-950/60 border border-slate-800/60 flex items-start gap-2 text-slate-300"
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
-                        <span>{ind}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <span className="rm-kicker">02 / Template &amp; Lure Configuration</span>
+                  <h3 className="text-base font-semibold text-[#16232F]">
+                    {activeCampaign.name}
+                  </h3>
+                  <p className="text-[#4B5A66] text-xs mt-0.5">
+                    Dispatched to {activeCampaign.targetDepartment} · Created{' '}
+                    {activeCampaign.createdAt}
+                  </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('inbox_simulator')}
+                  className="px-3.5 py-2 rounded-lg bg-[#0E2238] hover:bg-[#16232F] text-[#F3F5F1] font-medium flex items-center gap-1.5 transition text-xs cursor-pointer"
+                >
+                  <Eye className="w-3.5 h-3.5 text-[#5FD3BF]" />
+                  <span>Test In Employee Inbox</span>
+                </button>
+              </div>
+
+              {/* Template Info Card */}
+              <div className="p-4 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3] space-y-2">
+                <div className="flex justify-between items-center text-[#4B5A66]">
+                  <span className="font-mono text-[11px]">Template:</span>
+                  <span className="text-[#0E2238] font-semibold">
+                    {activeTemplate.name}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-[#4B5A66]">
+                  <span className="font-mono text-[11px]">Sender:</span>
+                  <span className="text-[#16232F] font-mono text-[11px]">
+                    {activeTemplate.senderName} &lt;{activeTemplate.senderAddress}&gt;
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-[#4B5A66]">
+                  <span className="font-mono text-[11px]">Subject:</span>
+                  <span className="text-[#16232F] font-medium">{activeTemplate.subject}</span>
+                </div>
+                <div className="flex justify-between items-center text-[#4B5A66]">
+                  <span className="font-mono text-[11px]">Simulated Bait URL:</span>
+                  <span className="text-red-700 font-mono text-[11px] truncate max-w-xs font-semibold">
+                    {activeTemplate.targetLandingBait}
+                  </span>
+                </div>
+              </div>
+
+              {/* Educational Telltale Flags */}
+              <div>
+                <h4 className="font-semibold text-[#16232F] font-mono uppercase text-[11px] mb-2 flex items-center gap-1.5">
+                  <Info className="w-4 h-4 text-[#D79A45]" /> Telltale Indicators Employees Must Catch
+                </h4>
+                <ul className="space-y-1.5">
+                  {activeTemplate.telltaleIndicators.map((ind, i) => (
+                    <li
+                      key={i}
+                      className="p-2.5 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3] flex items-start gap-2 text-[#16232F]"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#D79A45] mt-1.5 shrink-0" />
+                      <span>{ind}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
-        </>
+        </div>
       ) : (
         /* Employee Inbox Simulation Mode */
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 text-xs flex items-center justify-between">
-            <div className="flex items-center gap-2 text-cyan-300">
-              <Eye className="w-4 h-4 text-cyan-400 shrink-0" />
+          <div className="p-4 rounded-xl bg-white border border-[#D9DDD3] text-xs flex flex-wrap items-center justify-between gap-3 shadow-xs">
+            <div className="flex items-center gap-2 text-[#16232F]">
+              <Eye className="w-4 h-4 text-[#0E2238] shrink-0" />
               <span>
                 <strong>Employee Simulation View:</strong> Experience how employees see the simulated campaign in their corporate Outlook/Webmail client.
               </span>
             </div>
             <button
+              type="button"
               onClick={() => setActiveTab('manager')}
-              className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs"
+              className="px-3 py-1.5 rounded-lg bg-[#F3F5F1] hover:bg-[#E9ECE6] text-[#16232F] border border-[#C7CDC0] text-xs font-medium cursor-pointer"
             >
               Back to Analytics
             </button>
           </div>
 
           {/* Simulated Email Client UI */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="bg-white border border-[#C7CDC0] rounded-xl overflow-hidden shadow-md">
             {/* Client Top Bar */}
-            <div className="p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+            <div className="p-3.5 bg-[#081420] border-b border-[#3E6E86]/40 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-rose-500 inline-block" />
-                <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" />
+                <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                <span className="w-3 h-3 rounded-full bg-amber-400 inline-block" />
                 <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />
-                <span className="ml-3 font-mono text-xs text-slate-400">
-                  Inbox - Corporate Webmail
+                <span className="ml-3 font-mono text-xs text-[#C6D1D6]">
+                  Inbox — Corporate Webmail Client
                 </span>
               </div>
 
               {/* Phish Alert Button */}
               <button
+                type="button"
                 onClick={handleReportPhishing}
-                className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs flex items-center gap-1.5 transition shadow-md shadow-rose-950"
+                className="xh-btn primary"
               >
-                <Flag className="w-3.5 h-3.5" /> Report Phishing Attempt
+                <Flag className="w-3.5 h-3.5" />
+                <span>Report Phishing Attempt</span>
               </button>
             </div>
 
             {reportedSuccess && (
-              <div className="m-4 p-4 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
+              <div className="m-4 p-4 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-950 text-xs flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-emerald-700 shrink-0" />
                 <div>
-                  <strong>Threat Neutralized!</strong> You correctly identified this as a simulated phishing attack and used the "Report Phishing" corporate button. Telemetry logged and +50 Security XP awarded!
+                  <strong>Threat Neutralized!</strong> You correctly identified this as a simulated phishing attack and used the &ldquo;Report Phishing&rdquo; corporate button. Telemetry logged and +50 Security XP awarded!
                 </div>
               </div>
             )}
 
             {/* Email Headers View */}
-            <div className="p-4 border-b border-slate-800/80 bg-slate-900/60 text-xs space-y-1.5 font-sans">
+            <div className="p-4 border-b border-slate-200 bg-[#F3F5F1] text-xs space-y-1.5 font-sans">
               <div className="flex items-baseline gap-2">
-                <span className="text-slate-500 font-mono text-[11px] w-14">From:</span>
-                <span className="text-white font-semibold">{activeTemplate.senderName}</span>
-                <span className="text-slate-400 font-mono text-[11px]">
+                <span className="text-[#4B5A66] font-mono text-[11px] w-14">From:</span>
+                <span className="text-[#16232F] font-semibold">{activeTemplate.senderName}</span>
+                <span className="text-[#4B5A66] font-mono text-[11px]">
                   &lt;{activeTemplate.senderAddress}&gt;
                 </span>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-slate-500 font-mono text-[11px] w-14">Subject:</span>
-                <span className="text-slate-100 font-bold">{activeTemplate.subject}</span>
+                <span className="text-[#4B5A66] font-mono text-[11px] w-14">Subject:</span>
+                <span className="text-[#16232F] font-bold">{activeTemplate.subject}</span>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-slate-500 font-mono text-[11px] w-14">To:</span>
-                <span className="text-slate-300">employee@enterprise-corp.internal</span>
+                <span className="text-[#4B5A66] font-mono text-[11px] w-14">To:</span>
+                <span className="text-[#4B5A66]">employee@enterprise-corp.internal</span>
               </div>
             </div>
 
             {/* Email Body with click interceptor */}
-            <div className="p-6 bg-slate-950 text-slate-200 text-sm leading-relaxed font-sans">
+            <div className="p-6 bg-[#081420] text-[#EEF3F1] text-sm leading-relaxed font-sans">
               <div
                 dangerouslySetInnerHTML={{ __html: activeTemplate.bodyHtml }}
                 onClick={(e) => {
@@ -453,34 +435,34 @@ export const PhishingCampaigns: React.FC = () => {
 
       {/* Simulated Learning Moment Modal (Triggered on clicking link) */}
       {showLearningBaitModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="w-full max-w-lg bg-slate-900 border border-rose-500/50 rounded-2xl p-6 text-slate-100 shadow-2xl">
-            <div className="flex items-center gap-3 text-rose-400 mb-3">
-              <div className="p-2.5 rounded-xl bg-rose-950 border border-rose-500/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#081420]/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg bg-white border border-[#C7CDC0] rounded-xl p-6 text-[#16232F] shadow-2xl">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700">
                 <AlertOctagon className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-[#16232F]">
                   Caught! This Was a Phishing Simulation
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#4B5A66]">
                   No harm done — this was a scheduled corporate security drill.
                 </p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 mb-4 leading-relaxed">
+            <p className="text-xs text-[#4B5A66] mb-4 leading-relaxed">
               In a real-world breach, clicking that link would have directed you to a credential harvesting portal or executed drive-by malware.
             </p>
 
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 mb-4 space-y-2 text-xs">
-              <h4 className="font-bold text-amber-400 uppercase font-mono text-[11px]">
+            <div className="p-3.5 rounded-lg bg-[#F3F5F1] border border-[#D9DDD3] mb-4 space-y-2 text-xs">
+              <h4 className="font-bold text-[#0E2238] uppercase font-mono text-[11px]">
                 Red Flags You Missed:
               </h4>
-              <ul className="space-y-1.5 text-slate-300">
+              <ul className="space-y-1.5 text-[#16232F]">
                 {activeTemplate.telltaleIndicators.map((ind, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <span className="text-rose-400 font-bold">&bull;</span>
+                    <span className="text-red-700 font-bold">·</span>
                     <span>{ind}</span>
                   </li>
                 ))}
@@ -489,10 +471,11 @@ export const PhishingCampaigns: React.FC = () => {
 
             <div className="flex items-center justify-end">
               <button
+                type="button"
                 onClick={() => setShowLearningBaitModal(false)}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 text-white font-medium text-xs shadow-md shadow-rose-950"
+                className="px-4 py-2 rounded-lg bg-[#0E2238] hover:bg-[#16232F] text-[#F3F5F1] font-medium text-xs cursor-pointer"
               >
-                I Understand &mdash; Return to Simulation
+                I Understand — Return to Simulation
               </button>
             </div>
           </div>
@@ -501,18 +484,19 @@ export const PhishingCampaigns: React.FC = () => {
 
       {/* Create Custom Campaign Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 text-slate-100 shadow-2xl">
-            <h3 className="text-base font-bold text-white mb-1">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#081420]/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-white border border-[#C7CDC0] rounded-xl p-6 text-[#16232F] shadow-2xl">
+            <span className="rm-kicker">New Phishing Simulation</span>
+            <h3 className="text-base font-bold text-[#16232F] mb-1">
               Design Simulated Phishing Campaign
             </h3>
-            <p className="text-xs text-slate-400 mb-4">
+            <p className="text-xs text-[#4B5A66] mb-4">
               Configure target audience, difficulty level, and scenario lure.
             </p>
 
             <form onSubmit={handleCreateCampaign} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">
+                <label className="block text-[#16232F] font-medium mb-1">
                   Campaign Title
                 </label>
                 <input
@@ -520,20 +504,20 @@ export const PhishingCampaigns: React.FC = () => {
                   value={campaignName}
                   onChange={(e) => setCampaignName(e.target.value)}
                   placeholder="e.g. Q4 Executive Wire Transfer Drill"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 outline-none focus:border-rose-500"
+                  className="w-full bg-[#F3F5F1] border border-[#C7CDC0] rounded-lg px-3 py-2 text-[#16232F] outline-none focus:border-[#0E2238]"
                   autoFocus
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">
+                  <label className="block text-[#16232F] font-medium mb-1">
                     Target Department
                   </label>
                   <select
                     value={targetDept}
                     onChange={(e: any) => setTargetDept(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-200 outline-none focus:border-rose-500"
+                    className="w-full bg-[#F3F5F1] border border-[#C7CDC0] rounded-lg px-2.5 py-2 text-[#16232F] outline-none focus:border-[#0E2238]"
                   >
                     <option value="All Staff">All Staff</option>
                     <option value="Finance">Finance</option>
@@ -545,13 +529,13 @@ export const PhishingCampaigns: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">
+                  <label className="block text-[#16232F] font-medium mb-1">
                     Difficulty
                   </label>
                   <select
                     value={difficulty}
                     onChange={(e: any) => setDifficulty(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-200 outline-none focus:border-rose-500"
+                    className="w-full bg-[#F3F5F1] border border-[#C7CDC0] rounded-lg px-2.5 py-2 text-[#16232F] outline-none focus:border-[#0E2238]"
                   >
                     <option value="Novice">Novice</option>
                     <option value="Intermediate">Intermediate</option>
@@ -562,13 +546,13 @@ export const PhishingCampaigns: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">
+                <label className="block text-[#16232F] font-medium mb-1">
                   Phishing Template Lure
                 </label>
                 <select
                   value={selectedTemplateId}
                   onChange={(e) => setSelectedTemplateId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-200 outline-none focus:border-rose-500"
+                  className="w-full bg-[#F3F5F1] border border-[#C7CDC0] rounded-lg px-2.5 py-2 text-[#16232F] outline-none focus:border-[#0E2238]"
                 >
                   {templates.map((t) => (
                     <option key={t.id} value={t.id}>
@@ -578,17 +562,17 @@ export const PhishingCampaigns: React.FC = () => {
                 </select>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium"
+                  className="px-3.5 py-2 rounded-lg bg-[#F3F5F1] hover:bg-[#E9ECE6] text-[#16232F] border border-[#C7CDC0] font-medium cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-medium shadow-md shadow-rose-950"
+                  className="px-4 py-2 rounded-lg bg-[#0E2238] hover:bg-[#16232F] text-[#F3F5F1] font-medium cursor-pointer"
                 >
                   Deploy Simulation
                 </button>
