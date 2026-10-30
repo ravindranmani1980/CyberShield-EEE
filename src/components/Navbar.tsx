@@ -168,10 +168,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-1.5 font-mono text-[#EEF3F1]">
               <Shield className="w-3.5 h-3.5 text-[#5FD3BF] shrink-0" />
-              <span className="font-sans text-[#A9B7BF]">Encryption Engine:</span>
+              <span className="font-sans text-[#A9B7BF]">Encryption:</span>
               <strong className="font-semibold text-white">AES-GCM 256-bit</strong>
               <span className="text-[#5FD3BF] font-semibold">
-                (PBKDF2-SHA-256 · Zero-Knowledge)
+                (RAM-Only · Zero-Knowledge)
               </span>
             </div>
 
@@ -179,9 +179,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <div className="flex items-center gap-1.5 text-[#C6D1D6]">
               <ServerOff className="w-3.5 h-3.5 text-[#EBC385] shrink-0" />
-              <span className="text-[#A9B7BF]">Data Policy:</span>
+              <span className="text-[#A9B7BF]">Architecture:</span>
               <strong className="font-medium text-white">
-                0 Bytes Stored or Recorded
+                Zero-AI Mode · 0 Bytes Local &amp; Server Storage
               </strong>
             </div>
 
@@ -202,9 +202,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <div className="flex flex-wrap items-center gap-3">
             <span className="font-mono text-[11px] text-[#A9B7BF]">
-              Status:{' '}
+              Mode:{' '}
               <strong className={isLocked ? 'text-[#EBC385]' : 'text-[#5FD3BF]'}>
-                {isLocked ? 'VAULT LOCKED' : 'DECRYPTED IN RAM'}
+                {isLocked ? 'RAM VAULT LOCKED' : 'VOLATILE RAM ACTIVE'}
               </strong>
             </span>
             <span className="text-[#3E6E86]">·</span>
@@ -213,7 +213,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => onSelectTab('disclaimer')}
               className="text-[#5FD3BF] hover:text-[#EBC385] font-mono text-[11px] underline underline-offset-4 cursor-pointer transition-colors"
             >
-              Privacy &amp; Non-Storage Disclaimer →
+              Privacy &amp; Zero-Storage Disclaimer →
             </button>
           </div>
         </div>

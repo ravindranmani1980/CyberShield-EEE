@@ -357,12 +357,16 @@ export const VaultManagerModal: React.FC<VaultManagerModalProps> = ({
                   <span className="text-[#EBC385] font-semibold">250,000 PBKDF2-SHA-256 Iterations</span>
                 </div>
                 <div className="flex justify-between text-[#A9B7BF]">
-                  <span>Zero-Knowledge Guarantee:</span>
-                  <span className="text-[#5FD3BF] font-semibold">Client-Only (0 Bytes Stored on Server)</span>
+                  <span>Storage Mode:</span>
+                  <span className="text-[#5FD3BF] font-semibold">RAM-Only (0 Bytes in localStorage &amp; Server)</span>
+                </div>
+                <div className="flex justify-between text-[#A9B7BF]">
+                  <span>Engine Policy:</span>
+                  <span className="text-[#EBC385] font-semibold">Zero-AI Mode (100% Local Deterministic)</span>
                 </div>
                 {encryptedPayload && (
                   <div className="flex justify-between text-[#A9B7BF] pt-1 border-t border-[#3E6E86]/30">
-                    <span>Ciphertext Size:</span>
+                    <span>In-RAM Ciphertext Size:</span>
                     <span className="text-[#EEF3F1] font-semibold">{encryptedPayload.ciphertext.length} bytes</span>
                   </div>
                 )}

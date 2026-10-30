@@ -42,59 +42,19 @@ export const BreachPredictor: React.FC = () => {
   );
   const [loading, setLoading] = useState(false);
 
-  // Run prediction with client fallback
-  const handleRunPrediction = async () => {
+  // Run deterministic prediction 100% locally in browser RAM (Zero-AI Mode)
+  const handleRunPrediction = () => {
     setLoading(true);
-    let resolvedData: BreachPredictionResult | null = null;
-
-    try {
-      const resp = await fetch('/api/predict-breach', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ telemetry }),
-      });
-
-      if (resp.ok) {
-        const text = await resp.text();
-        try {
-          const parsed = JSON.parse(text);
-          if (parsed && typeof parsed === 'object' && typeof parsed.probability === 'number') {
-            resolvedData = {
-              ...parsed,
-              executiveSummary: parsed.executiveSummary || parsed.summary || '',
-            };
-          }
-        } catch (jsonErr) {
-          console.warn(
-            'Invalid JSON from /api/predict-breach, falling back to local computation:',
-            jsonErr
-          );
-        }
-      } else {
-        console.warn(
-          `/api/predict-breach returned status ${resp.status}, falling back to local computation`
-        );
-      }
-    } catch (networkErr) {
-      console.warn(
-        'Network error calling /api/predict-breach, falling back to local computation:',
-        networkErr
-      );
-    }
-
-    if (!resolvedData) {
-      resolvedData = calculateHeuristicBreachProbability(telemetry);
-    }
-
-    setPrediction(resolvedData);
-
-    try {
-      confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
-    } catch {
-      // ignore
-    } finally {
+    setTimeout(() => {
+      const resolvedData = calculateHeuristicBreachProbability(telemetry);
+      setPrediction(resolvedData);
       setLoading(false);
-    }
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch {
+        // ignore
+      }
+    }, 150);
   };
 
   // Quick preset configurations
@@ -156,18 +116,18 @@ export const BreachPredictor: React.FC = () => {
       {/* Postrix Command Header */}
       <section className="xh-panel">
         <div className="xh-kicker">
-          <span className="k">Probabilistic Threat Modeling &amp; MITRE ATT&amp;CK Forecasting</span>
-          <span className="tag">Multi-Signal Telemetry · Client Fallback Ready</span>
+          <span className="k">Deterministic Threat Modeling &amp; MITRE ATT&amp;CK Forecasting · Zero-AI Mode</span>
+          <span className="tag">Multi-Signal Telemetry · 100% Local RAM</span>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 pt-4">
           <div>
             <h2 className="text-lg font-semibold text-[#EEF3F1] flex items-center gap-2">
               <BrainCircuit className="w-5 h-5 text-[#5FD3BF]" />
-              Machine Learning Breach Prediction &amp; Forecasting Engine
+              Deterministic Breach Probability &amp; Risk Forecasting Engine
             </h2>
             <p className="text-xs text-[#A9B7BF] mt-0.5">
-              Synthesizes operational security telemetry to forecast probabilistic breach likelihoods before initial access occurs.
+              Synthesizes operational security telemetry 100% locally in browser RAM to forecast breach likelihoods with zero AI and zero storage.
             </p>
           </div>
 

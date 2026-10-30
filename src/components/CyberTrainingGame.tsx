@@ -25,9 +25,7 @@ export const CyberTrainingGame: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
-  const [highScore, setHighScore] = useState<number>(() => {
-    return Number(localStorage.getItem('cybershield_game_highscore')) || 0;
-  });
+  const [highScore, setHighScore] = useState<number>(0);
 
   // Timer per question (10 seconds)
   const [timeLeft, setTimeLeft] = useState(10);
@@ -88,7 +86,6 @@ export const CyberTrainingGame: React.FC = () => {
 
       if (newScore > highScore) {
         setHighScore(newScore);
-        localStorage.setItem('cybershield_game_highscore', newScore.toString());
       }
 
       if (newStreak % 3 === 0) {

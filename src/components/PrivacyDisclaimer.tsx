@@ -30,7 +30,13 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
     if (onPurgeLocalData) {
       onPurgeLocalData();
     } else {
-      localStorage.removeItem('cybershield_e2ee_vault');
+      try {
+        localStorage.removeItem('cybershield_e2ee_vault');
+        localStorage.removeItem('cybershield_game_highscore');
+        localStorage.removeItem('cybershield_game_high_score');
+      } catch {
+        // ignore
+      }
     }
     setConfirmPurge(false);
     setPurgedSuccess(true);
@@ -44,34 +50,34 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
         <div className="xh-kicker">
           <span className="k flex items-center gap-1.5">
             <ServerOff className="w-3.5 h-3.5 text-[#5FD3BF]" />
-            Strict Zero-Retention · No Data Recording Policy
+            Strict RAM-Only Mode · Zero-AI Mode · No Data Recording Policy
           </span>
-          <span className="tag">0 Bytes Server Storage · 100% Auditable</span>
+          <span className="tag">0 Bytes Server · 0 Bytes localStorage · 0% AI</span>
         </div>
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pt-5">
           <div className="space-y-3 max-w-3xl">
             <h1 className="text-xl sm:text-2xl font-semibold text-[#EEF3F1] tracking-tight">
-              Privacy &amp; Data Non-Storage Disclaimer
+              Privacy, RAM-Only &amp; Zero-AI Architecture Disclaimer
             </h1>
 
             <p className="text-xs sm:text-sm text-[#C6D1D6] leading-relaxed">
               <strong className="text-[#5FD3BF] font-semibold">
-                We do not store, record, log, or retain any information that you enter on this platform.
+                We do not store, record, log, or persist any information that you enter on this platform — neither on any server nor in your browser&apos;s localStorage.
               </strong>{' '}
-              Maniq CyberShield E2EE is architected as a privacy-first, zero-knowledge cybersecurity training and personal defense suite. Every credential, passphrase, habit, email sample, or source code snippet you enter stays under your exclusive control.
+              Maniq CyberShield E2EE operates strictly in <strong>RAM-Only Mode</strong> and <strong>Zero-AI Mode</strong>. Every credential, passphrase, habit, email sample, or source code snippet lives exclusively in volatile browser memory (RAM) and is permanently destroyed the moment you lock the vault or close/refresh the browser tab.
             </p>
           </div>
 
-          <div className="xh-metric text-center shrink-0 w-full md:w-56">
+          <div className="xh-metric text-center shrink-0 w-full md:w-60">
             <div className="w-10 h-10 rounded-lg bg-[#081420] border border-[#5FD3BF]/30 text-[#5FD3BF] flex items-center justify-center mx-auto mb-2">
               <EyeOff className="w-5 h-5" />
             </div>
             <div className="text-[11px] font-mono uppercase tracking-wider text-[#A9B7BF]">
-              Server Database Records
+              Disk &amp; Server Persistence
             </div>
             <div className="num hi mt-1">0 BYTES</div>
-            <p>No Telemetry · No Tracking</p>
+            <p>RAM-Only · Zero-AI · No localStorage</p>
           </div>
         </div>
       </section>
@@ -84,12 +90,14 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
               <ServerOff className="w-4 h-4" />
             </div>
             <div>
-              <span className="rm-kicker !mb-0">01 / Zero Backend Persistence</span>
-              <h2 className="text-sm font-semibold text-[#16232F]">No Server-Side Recording</h2>
+              <span className="rm-kicker !mb-0">01 / RAM-Only Mode</span>
+              <h2 className="text-sm font-semibold text-[#16232F]">
+                Zero Server &amp; Zero localStorage
+              </h2>
             </div>
           </div>
           <p className="text-xs text-[#4B5A66] leading-relaxed">
-            We do not operate any backend database, analytics tracker, or keystroke logger. Information typed into any form, scanner, or simulator is never written to server disks or shared with third parties.
+            Nothing is ever written to <code className="font-mono text-[#0E2238] font-semibold">window.localStorage</code>, <code className="font-mono text-[#0E2238] font-semibold">IndexedDB</code>, cookies, or any backend database. All state exists purely in volatile browser RAM during your active tab session.
           </p>
         </div>
 
@@ -101,14 +109,14 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
             <div>
               <span className="rm-kicker !mb-0">02 / WebCrypto Standard</span>
               <h2 className="text-sm font-semibold text-[#16232F]">
-                Zero-Knowledge Client Encryption
+                In-RAM AES-GCM 256-Bit Vault
               </h2>
             </div>
           </div>
           <p className="text-xs text-[#4B5A66] leading-relaxed">
-            Your Master Passphrase never leaves your browser&apos;s volatile memory (RAM). Vault items are encrypted locally using the browser&apos;s native WebCrypto API (
+            Your Master Passphrase and vault items are encrypted in browser RAM using the native WebCrypto API (
             <code className="font-mono text-[#0E2238] font-semibold">AES-GCM 256-bit</code> &amp;{' '}
-            <code className="font-mono text-[#0E2238] font-semibold">PBKDF2-SHA-256</code>).
+            <code className="font-mono text-[#0E2238] font-semibold">PBKDF2-SHA-256</code>). You may optionally export/import a manual <code className="font-mono text-[#0E2238] font-semibold">.cybervault</code> file if you choose.
           </p>
         </div>
 
@@ -118,14 +126,14 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
               <Cpu className="w-4 h-4" />
             </div>
             <div>
-              <span className="rm-kicker !mb-0">03 / Stateless Evaluation</span>
+              <span className="rm-kicker !mb-0">03 / Zero-AI Mode</span>
               <h2 className="text-sm font-semibold text-[#16232F]">
-                Ephemeral In-Memory Processing
+                100% Deterministic Local Engines
               </h2>
             </div>
           </div>
           <p className="text-xs text-[#4B5A66] leading-relaxed">
-            Email headers, code vulnerability scans, and breach posture inputs are evaluated transiently in memory to produce immediate feedback and are discarded the moment the evaluation completes.
+            Zero AI models or external LLM APIs are used anywhere in this application. Email header triage, OWASP code auditing, and breach telemetry calculations run 100% locally via deterministic client-side rulesets.
           </p>
         </div>
       </div>
@@ -137,14 +145,14 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
             <span className="rm-kicker">04 / Governance Verification Matrix</span>
             <h2 className="text-base font-semibold text-[#16232F] flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-700" />
-              Module-by-Module Data Handling Transparency
+              Module-by-Module Data Handling &amp; Zero-AI Transparency
             </h2>
             <p className="text-xs text-[#4B5A66] mt-0.5">
-              Exact technical verification of how each feature processes information you enter.
+              Exact technical verification confirming 0 bytes of local/server storage and 0% AI usage across all modules.
             </p>
           </div>
           <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-emerald-50 border border-emerald-200 text-emerald-800">
-            100% Auditable Privacy
+            RAM-Only · Zero-AI Verified
           </span>
         </div>
 
@@ -154,8 +162,8 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
               <tr className="border-b border-slate-200 text-[#4B5A66] font-mono text-[11px] uppercase bg-[#F3F5F1]">
                 <th className="py-3 px-3">Application Module</th>
                 <th className="py-3 px-3">Information Entered</th>
-                <th className="py-3 px-3">Where It Is Processed</th>
-                <th className="py-3 px-3">Server Storage / Recording</th>
+                <th className="py-3 px-3">Processing Engine (Zero-AI)</th>
+                <th className="py-3 px-3">Local &amp; Server Storage</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 text-[#16232F]">
@@ -163,23 +171,23 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
                 <td className="py-3 px-3 font-semibold">E2EE Habits &amp; Account Vault</td>
                 <td className="py-3 px-3 text-[#4B5A66]">Passphrase, habits, generated credentials</td>
                 <td className="py-3 px-3 font-mono text-[#0E2238] font-medium">
-                  Browser WebCrypto API (Local)
+                  Browser WebCrypto API (Volatile RAM)
                 </td>
                 <td className="py-3 px-3">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[11px] font-medium">
-                    <CheckCircle2 className="w-3 h-3" /> Never Stored on Server
+                    <CheckCircle2 className="w-3 h-3" /> 0 Bytes (RAM-Only)
                   </span>
                 </td>
               </tr>
               <tr className="hover:bg-[#F3F5F1]/60">
                 <td className="py-3 px-3 font-semibold">Email Threat Filter</td>
-                <td className="py-3 px-3 text-[#4B5A66]">Email sender, subject, body text</td>
+                <td className="py-3 px-3 text-[#4B5A66]">Email sender, subject, headers, body text</td>
                 <td className="py-3 px-3 font-mono text-[#0E2238] font-medium">
-                  Ephemeral Heuristic / Stateless Scan
+                  Deterministic Regex &amp; Header Rules (No AI)
                 </td>
                 <td className="py-3 px-3">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[11px] font-medium">
-                    <CheckCircle2 className="w-3 h-3" /> Never Recorded or Logged
+                    <CheckCircle2 className="w-3 h-3" /> 0 Bytes (RAM-Only)
                   </span>
                 </td>
               </tr>
@@ -187,11 +195,11 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
                 <td className="py-3 px-3 font-semibold">Vulnerability Lab</td>
                 <td className="py-3 px-3 text-[#4B5A66]">Source code snippets &amp; remediation patches</td>
                 <td className="py-3 px-3 font-mono text-[#0E2238] font-medium">
-                  Ephemeral AST / Pattern Evaluator
+                  Deterministic CWE / OWASP Pattern Matcher (No AI)
                 </td>
                 <td className="py-3 px-3">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[11px] font-medium">
-                    <CheckCircle2 className="w-3 h-3" /> Never Recorded or Logged
+                    <CheckCircle2 className="w-3 h-3" /> 0 Bytes (RAM-Only)
                   </span>
                 </td>
               </tr>
@@ -199,23 +207,23 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
                 <td className="py-3 px-3 font-semibold">Phishing &amp; Vishing Simulators</td>
                 <td className="py-3 px-3 text-[#4B5A66]">Training responses &amp; drill choices</td>
                 <td className="py-3 px-3 font-mono text-[#0E2238] font-medium">
-                  In-Browser React State Only
+                  Client-Side State Machine (No AI)
                 </td>
                 <td className="py-3 px-3">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[11px] font-medium">
-                    <CheckCircle2 className="w-3 h-3" /> Never Recorded or Logged
+                    <CheckCircle2 className="w-3 h-3" /> 0 Bytes (RAM-Only)
                   </span>
                 </td>
               </tr>
               <tr className="hover:bg-[#F3F5F1]/60">
-                <td className="py-3 px-3 font-semibold">ML Breach Predictor &amp; Threat Blitz</td>
+                <td className="py-3 px-3 font-semibold">Breach Predictor &amp; Threat Blitz</td>
                 <td className="py-3 px-3 text-[#4B5A66]">Telemetry sliders &amp; game scores</td>
                 <td className="py-3 px-3 font-mono text-[#0E2238] font-medium">
-                  Client-Side Calculation &amp; Local State
+                  Deterministic Formula &amp; React State (No AI)
                 </td>
                 <td className="py-3 px-3">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[11px] font-medium">
-                    <CheckCircle2 className="w-3 h-3" /> Never Recorded or Logged
+                    <CheckCircle2 className="w-3 h-3" /> 0 Bytes (RAM-Only)
                   </span>
                 </td>
               </tr>
@@ -224,7 +232,7 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
         </div>
       </section>
 
-      {/* Educational & Usage Disclaimer + Local Storage Purge Control */}
+      {/* Educational & Usage Disclaimer + RAM Session Purge Control */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Legal & Educational Notice */}
         <div className="bg-white border border-[#D9DDD3] rounded-xl p-6 space-y-3 shadow-xs">
@@ -239,28 +247,27 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
           </div>
           <div className="space-y-2.5 text-xs text-[#4B5A66] leading-relaxed">
             <p>
-              <strong className="text-[#16232F]">1. No Data Liability or Custody:</strong> Because Maniq CyberShield E2EE never records, transmits, or stores your inputs on any backend server, we cannot recover lost master passphrases or view any data you enter.
+              <strong className="text-[#16232F]">1. No Data Liability or Custody:</strong> Because Maniq CyberShield E2EE never writes your inputs to <code className="font-mono text-[#0E2238]">localStorage</code> or any server, closing or refreshing the browser tab immediately clears your session.
             </p>
             <p>
-              <strong className="text-[#16232F]">2. Authorized Defensive Training Only:</strong> All phishing templates, vishing scripts, and vulnerable code labs are provided strictly for defensive cybersecurity awareness, security engineering education, and authorized readiness drills.
+              <strong className="text-[#16232F]">2. Zero-AI Deterministic Execution:</strong> All analyses run on deterministic, auditable client-side algorithms without sending data to any external AI model.
             </p>
             <p>
-              <strong className="text-[#16232F]">3. Local Browser Persistence:</strong> Only your encrypted vault ciphertext is cached inside your own web browser&apos;s{' '}
-              <code className="font-mono text-[#0E2238] font-semibold">localStorage</code> so your habits persist across page reloads on your device. Clearing your browser data or using the purge button on this page permanently removes it.
+              <strong className="text-[#16232F]">3. Optional Manual Encrypted File Export:</strong> If you wish to save your encrypted vault across sessions, you may manually download an AES-256-GCM encrypted <code className="font-mono text-[#0E2238]">.cybervault</code> file to your own device from the Vault modal.
             </p>
           </div>
         </div>
 
-        {/* Interactive Local Browser Storage Inspector & Purge */}
+        {/* Interactive Volatile RAM & Browser Storage Purge */}
         <div className="bg-white border border-[#D9DDD3] rounded-xl p-6 flex flex-col justify-between space-y-4 shadow-xs">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <HardDrive className="w-5 h-5 text-[#0E2238]" />
                 <div>
-                  <span className="rm-kicker !mb-0">06 / Client Storage Sovereignty</span>
+                  <span className="rm-kicker !mb-0">06 / Volatile Memory Sovereignty</span>
                   <h3 className="text-sm font-semibold text-[#16232F]">
-                    Your Local Browser Storage Control
+                    Instant RAM &amp; Browser Memory Purge
                   </h3>
                 </div>
               </div>
@@ -271,18 +278,18 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
                     : 'bg-slate-100 text-slate-600 border-slate-300'
                 }`}
               >
-                {hasLocalVault ? 'Local Encrypted Vault Present' : 'Browser Storage Empty'}
+                {hasLocalVault ? 'Active In-RAM Session' : 'RAM Session Empty (0 Bytes)'}
               </span>
             </div>
             <p className="text-xs text-[#4B5A66] leading-relaxed">
-              You have complete sovereignty over the encrypted state saved in your browser. At any time, you can wipe all locally cached browser data with a single click below.
+              Browser <code className="font-mono text-[#0E2238] font-semibold">localStorage</code> is permanently disabled (0 bytes stored). Click below at any time to immediately wipe the current volatile RAM session in memory.
             </p>
           </div>
 
           {purgedSuccess && (
             <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2 font-mono">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-700" />
-              <span>All local browser storage has been permanently wiped. Zero data remains.</span>
+              <span>Volatile RAM session and all browser storage registers have been wiped.</span>
             </div>
           )}
 
@@ -294,14 +301,14 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
                 className="w-full py-2.5 px-4 rounded-lg bg-red-50 hover:bg-red-100 text-red-800 border border-red-200 text-xs font-mono font-semibold flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 <Trash2 className="w-4 h-4 text-red-700" />
-                <span>Wipe All Local Browser Data Immediately</span>
+                <span>Wipe Volatile RAM Session Immediately</span>
               </button>
             ) : (
               <div className="p-3.5 rounded-lg bg-red-50 border border-red-300 space-y-3">
                 <div className="flex items-center gap-2 text-xs text-red-900">
                   <AlertTriangle className="w-4 h-4 text-red-700 shrink-0" />
                   <span>
-                    Confirm permanent deletion of your local browser&apos;s encrypted vault and scores?
+                    Confirm immediate wipe of your active in-memory RAM vault session?
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -310,7 +317,7 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
                     onClick={handlePurge}
                     className="flex-1 py-2 rounded-lg bg-red-700 hover:bg-red-800 text-white text-xs font-semibold transition cursor-pointer"
                   >
-                    Yes, Erase Local Browser Data
+                    Yes, Wipe RAM Session Now
                   </button>
                   <button
                     type="button"
@@ -330,7 +337,7 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
       <div className="p-4 rounded-xl bg-white border border-[#D9DDD3] flex flex-wrap items-center justify-between gap-3 text-xs text-[#4B5A66] font-mono shadow-xs">
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4 text-[#0E2238]" />
-          <span>Maniq CyberShield E2EE · Privacy-By-Design Architecture</span>
+          <span>Maniq CyberShield E2EE · RAM-Only &amp; Zero-AI Architecture</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span>Created by</span>

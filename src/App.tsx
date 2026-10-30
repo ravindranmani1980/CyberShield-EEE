@@ -25,12 +25,12 @@ import { PrivacyDisclaimer } from './components/PrivacyDisclaimer';
 import { VaultManagerModal } from './components/VaultManagerModal';
 import { Lock, Key, EyeOff } from 'lucide-react';
 
-const VAULT_STORAGE_KEY = 'cybershield_e2ee_vault';
+const LEGACY_VAULT_STORAGE_KEY = 'cybershield_e2ee_vault';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('habits');
 
-  // E2EE Vault State
+  // E2EE Vault State — Strictly Volatile Browser RAM Only (Zero localStorage Persistence)
   const [encryptedPayload, setEncryptedPayload] = useState<EncryptedPayload | null>(null);
   const [decryptedUserData, setDecryptedUserData] = useState<EncryptedUserData | null>(null);
   const [masterPassphrase, setMasterPassphrase] = useState<string | null>(null);
@@ -41,23 +41,16 @@ export default function App() {
   // Inactivity auto-lock ref
   const lastActiveRef = useRef<number>(Date.now());
 
-  // Load existing encrypted vault from localStorage on startup
+  // RAM-Only Mode initialization: purge any legacy localStorage keys and open vault setup in RAM
   useEffect(() => {
-    const raw = localStorage.getItem(VAULT_STORAGE_KEY);
-    if (raw) {
-      try {
-        const payload = JSON.parse(raw) as EncryptedPayload;
-        setEncryptedPayload(payload);
-        setIsLocked(true);
-        // Show unlock modal on startup if vault exists
-        setShowVaultModal(true);
-      } catch {
-        console.warn('Corrupted vault storage, resetting.');
-      }
-    } else {
-      // First time user: show modal to set up master passphrase
-      setShowVaultModal(true);
+    try {
+      localStorage.removeItem(LEGACY_VAULT_STORAGE_KEY);
+      localStorage.removeItem('cybershield_game_high_score');
+      localStorage.removeItem('cybershield_game_highscore');
+    } catch {
+      // Ignore if storage access is restricted
     }
+    setShowVaultModal(true);
   }, []);
 
   // Inactivity auto-lock listener (15 minutes)
@@ -82,11 +75,10 @@ export default function App() {
     };
   }, [isLocked]);
 
-  // Setup new vault with user master passphrase
+  // Setup new vault in volatile RAM with user master passphrase
   const handleSetupVault = async (passphrase: string): Promise<boolean> => {
     try {
       const payload = await encryptVaultData(INITIAL_USER_DATA, passphrase);
-      localStorage.setItem(VAULT_STORAGE_KEY, JSON.stringify(payload));
       setEncryptedPayload(payload);
       setDecryptedUserData(INITIAL_USER_DATA);
       setMasterPassphrase(passphrase);
@@ -99,7 +91,7 @@ export default function App() {
     }
   };
 
-  // Unlock existing vault
+  // Unlock existing in-RAM vault
   const handleUnlockVault = async (passphrase: string): Promise<boolean> => {
     if (!encryptedPayload) return false;
     try {
@@ -121,25 +113,29 @@ export default function App() {
     }
   };
 
-  // Lock vault immediately
+  // Lock vault immediately (wipes decrypted plaintext and passphrase from RAM)
   const handleLockVault = () => {
     setMasterPassphrase(null);
     setDecryptedUserData(null);
     setIsLocked(true);
   };
 
-  // Wipe all local browser storage for this app
+  // Wipe all volatile RAM session state and ensure localStorage is completely empty
   const handlePurgeLocalData = () => {
-    localStorage.removeItem(VAULT_STORAGE_KEY);
-    localStorage.removeItem('cybershield_game_high_score');
-    localStorage.removeItem('cybershield_game_highscore');
+    try {
+      localStorage.removeItem(LEGACY_VAULT_STORAGE_KEY);
+      localStorage.removeItem('cybershield_game_high_score');
+      localStorage.removeItem('cybershield_game_highscore');
+    } catch {
+      // Ignore
+    }
     setEncryptedPayload(null);
     setDecryptedUserData(null);
     setMasterPassphrase(null);
     setIsLocked(true);
   };
 
-  // Update user data and re-encrypt
+  // Update user data and re-encrypt strictly in volatile RAM
   const handleUpdateUserData = async (updatedData: EncryptedUserData) => {
     setDecryptedUserData(updatedData);
 
@@ -150,7 +146,6 @@ export default function App() {
           masterPassphrase,
           encryptedPayload?.salt
         );
-        localStorage.setItem(VAULT_STORAGE_KEY, JSON.stringify(newPayload));
         setEncryptedPayload(newPayload);
       } catch (err) {
         console.error('Failed to re-encrypt vault data:', err);
@@ -226,7 +221,7 @@ export default function App() {
     URL.revokeObjectURL(url);
   };
 
-  // Import encrypted backup
+  // Import encrypted backup into volatile RAM only
   const handleImportBackup = async (file: File): Promise<boolean> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -235,7 +230,6 @@ export default function App() {
           const content = e.target?.result as string;
           const parsed = JSON.parse(content) as EncryptedPayload;
           if (parsed.ciphertext && parsed.iv && parsed.salt) {
-            localStorage.setItem(VAULT_STORAGE_KEY, JSON.stringify(parsed));
             setEncryptedPayload(parsed);
             setIsLocked(true);
             setDecryptedUserData(null);
@@ -284,8 +278,8 @@ export default function App() {
             {isLocked || !decryptedUserData ? (
               <section className="xh-panel max-w-2xl mx-auto text-center space-y-4 mt-6">
                 <div className="xh-kicker justify-center">
-                  <span className="k">Zero-Knowledge Client-Side Cryptography</span>
-                  <span className="tag">AES-GCM 256-Bit · PBKDF2</span>
+                  <span className="k">Zero-Knowledge RAM-Only Cryptography · Zero-AI Mode</span>
+                  <span className="tag">AES-GCM 256-Bit · 0 Bytes Stored</span>
                 </div>
                 <div className="pt-2 space-y-3">
                   <div className="w-14 h-14 rounded-xl bg-[#102236] border border-[#5FD3BF]/40 text-[#5FD3BF] mx-auto flex items-center justify-center shadow-md">
@@ -293,10 +287,10 @@ export default function App() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-[#EEF3F1]">
-                      Zero-Knowledge Personal Vault Locked
+                      Zero-Knowledge RAM-Only Vault Locked
                     </h3>
                     <p className="text-xs text-[#A9B7BF] mt-1 max-w-md mx-auto leading-relaxed">
-                      All habits, streaks, credentials, and threat hunting notes are encrypted in your browser using client-side AES-GCM 256-bit. We never store or record your information.
+                      Operating in strict <strong>RAM-Only Mode</strong> and <strong>Zero-AI Mode</strong>. All habits, streaks, and credentials live exclusively in volatile browser memory using AES-GCM 256-bit — nothing is ever written to localStorage or any server.
                     </p>
                   </div>
                   <div className="pt-1">

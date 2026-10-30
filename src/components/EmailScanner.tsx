@@ -100,7 +100,7 @@ export const EmailScanner: React.FC = () => {
 
   // Scan state
   const [scanResult, setScanResult] = useState<EmailScanResult | null>(null);
-  const [isScanningAi, setIsScanningAi] = useState(false);
+  const [isScanningLocal, setIsScanningLocal] = useState(false);
 
   // Automatically scan using client-side heuristics on text change
   useEffect(() => {
@@ -120,44 +120,14 @@ export const EmailScanner: React.FC = () => {
     }
   };
 
-  // Perform AI-augmented deep triage via server endpoint
-  const handleRunAiTriage = async () => {
-    setIsScanningAi(true);
-    try {
-      const extractedUrls = scanEmailContent(bodyInput, senderInput, subjectInput, headersInput)
-        .linkAssessments.map((l) => l.url);
-
-      const resp = await fetch('/api/analyze-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sender: senderInput,
-          subject: subjectInput,
-          emailText: bodyInput,
-          headers: headersInput,
-          links: extractedUrls,
-        }),
-      });
-
-      if (resp.ok) {
-        const data = await resp.json();
-        if (data.threatLevel) {
-          setScanResult((prev) => ({
-            ...prev!,
-            threatLevel: data.threatLevel,
-            riskScore: data.riskScore ?? prev!.riskScore,
-            redFlags: data.redFlags ?? prev!.redFlags,
-            linkAssessments: data.linkAssessments ?? prev!.linkAssessments,
-            techniqueAnalysis: data.techniqueAnalysis ?? prev!.techniqueAnalysis,
-            recommendations: data.recommendations ?? prev!.recommendations,
-          }));
-        }
-      }
-    } catch (err) {
-      console.warn('AI Triage error, using client heuristics:', err);
-    } finally {
-      setIsScanningAi(false);
-    }
+  // Perform 100% local deterministic deep triage in RAM (Zero-AI Mode)
+  const handleRunLocalDeepTriage = () => {
+    setIsScanningLocal(true);
+    setTimeout(() => {
+      const result = scanEmailContent(bodyInput, senderInput, subjectInput, headersInput);
+      setScanResult(result);
+      setIsScanningLocal(false);
+    }, 150);
   };
 
   const getThreatColor = (level: string) => {
@@ -196,8 +166,8 @@ export const EmailScanner: React.FC = () => {
       {/* Postrix Command Header */}
       <section className="xh-panel">
         <div className="xh-kicker">
-          <span className="k">Inbound Mail Header &amp; Payload Triage Engine</span>
-          <span className="tag">SPF · DKIM · DMARC · Homoglyph Detection</span>
+          <span className="k">Inbound Mail Header &amp; Payload Triage Engine · Zero-AI Mode</span>
+          <span className="tag">SPF · DKIM · DMARC · 100% Local RAM</span>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-b border-[#C9D3D9]/12">
@@ -207,22 +177,22 @@ export const EmailScanner: React.FC = () => {
               Automated Email Threat &amp; Malicious Link Filter
             </h2>
             <p className="text-xs text-[#A9B7BF] mt-0.5">
-              Scans incoming mail headers, sender typosquatting, lookalike domains, and weaponized links in real time without storing any data.
+              Scans incoming mail headers, sender typosquatting, lookalike domains, and weaponized links 100% locally in browser RAM with zero AI and zero storage.
             </p>
           </div>
 
           <button
             type="button"
-            onClick={handleRunAiTriage}
-            disabled={isScanningAi}
+            onClick={handleRunLocalDeepTriage}
+            disabled={isScanningLocal}
             className="xh-btn primary disabled:opacity-50"
           >
-            {isScanningAi ? (
+            {isScanningLocal ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
               <Sparkles className="w-4 h-4" />
             )}
-            <span>Run Deep Threat Triage</span>
+            <span>Run Local Deep Triage</span>
           </button>
         </div>
 
