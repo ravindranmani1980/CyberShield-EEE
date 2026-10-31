@@ -249,7 +249,7 @@ export const VaultManagerModal: React.FC<VaultManagerModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-semibold tracking-tight text-[#EEF3F1] font-serif">
-                  Maniq <span className="text-[#D79A45]">Zero-Knowledge Vault</span>
+                  Maniq <span className="text-[#D79A45]">Academy</span> · Zero-Knowledge Vault
                 </h2>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#2BB5A0]/15 text-[#5FD3BF] border border-[#5FD3BF]/30">
                   AES-256-GCM

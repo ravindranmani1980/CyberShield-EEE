@@ -65,7 +65,7 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
               <strong className="text-[#5FD3BF] font-semibold">
                 We do not store, record, log, or persist any information that you enter on this platform — neither on any server nor in your browser&apos;s localStorage.
               </strong>{' '}
-              Maniq CyberShield E2EE operates strictly in <strong>RAM-Only Mode</strong> and <strong>Zero-AI Mode</strong>. Every credential, passphrase, habit, email sample, or source code snippet lives exclusively in volatile browser memory (RAM) and is permanently destroyed the moment you lock the vault or close/refresh the browser tab.
+              Maniq Academy operates strictly in <strong>RAM-Only Mode</strong> and <strong>Zero-AI Mode</strong>. Every credential, passphrase, habit, email sample, or source code snippet lives exclusively in volatile browser memory (RAM) and is permanently destroyed the moment you lock the vault or close/refresh the browser tab.
             </p>
           </div>
 
@@ -247,7 +247,7 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
           </div>
           <div className="space-y-2.5 text-xs text-[#4B5A66] leading-relaxed">
             <p>
-              <strong className="text-[#16232F]">1. No Data Liability or Custody:</strong> Because Maniq CyberShield E2EE never writes your inputs to <code className="font-mono text-[#0E2238]">localStorage</code> or any server, closing or refreshing the browser tab immediately clears your session.
+              <strong className="text-[#16232F]">1. No Data Liability or Custody:</strong> Because Maniq Academy never writes your inputs to <code className="font-mono text-[#0E2238]">localStorage</code> or any server, closing or refreshing the browser tab immediately clears your session.
             </p>
             <p>
               <strong className="text-[#16232F]">2. Zero-AI Deterministic Execution:</strong> All analyses run on deterministic, auditable client-side algorithms without sending data to any external AI model.
@@ -337,7 +337,7 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
       <div className="p-4 rounded-xl bg-white border border-[#D9DDD3] flex flex-wrap items-center justify-between gap-3 text-xs text-[#4B5A66] font-mono shadow-xs">
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4 text-[#0E2238]" />
-          <span>Maniq CyberShield E2EE · RAM-Only &amp; Zero-AI Architecture</span>
+          <span>Maniq Academy · RAM-Only &amp; Zero-AI Architecture</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span>Created by</span>

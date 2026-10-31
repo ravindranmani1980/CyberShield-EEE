@@ -214,7 +214,7 @@ export default function App() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `cybershield-e2ee-vault-${new Date().toISOString().split('T')[0]}.cybervault`;
+    a.download = `maniq-academy-vault-${new Date().toISOString().split('T')[0]}.cybervault`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -382,7 +382,7 @@ export default function App() {
             </span>
             <span>
               <strong className="font-serif text-sm font-semibold text-[#F3F5F1]">
-                Maniq <span className="text-[#D79A45]">CyberShield E2EE</span>
+                Maniq <span className="text-[#D79A45]">Academy</span>
               </strong>{' '}
               — Zero-Knowledge Cyber Defense &amp; Habit Suite · We Do Not Store or Record Entered Information
             </span>

@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               RM
             </span>
             <span>
-              Maniq <span className="accent">CyberShield E2EE</span>
+              Maniq <span className="accent">Academy</span>
             </span>
           </a>
 
@@ -230,7 +230,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-[#EEF3F1] font-serif">
-                    Share Maniq <span className="text-[#D79A45]">CyberShield E2EE</span>
+                    Share Maniq <span className="text-[#D79A45]">Academy</span>
                   </h3>
                   <p className="text-xs text-[#A9B7BF]">
                     Direct public access &mdash; no Google login required

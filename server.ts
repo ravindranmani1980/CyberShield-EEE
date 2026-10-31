@@ -47,7 +47,7 @@ async function startServer() {
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(
-      `[Maniq CyberShield Server] Zero-AI & RAM-Only Mode listening on http://0.0.0.0:${PORT} (env: ${
+      `[Maniq Academy Server] Zero-AI & RAM-Only Mode listening on http://0.0.0.0:${PORT} (env: ${
         isProd ? 'production' : 'development'
       }, static dist: ${hasDist})`
     );
