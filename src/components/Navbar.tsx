@@ -273,14 +273,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <input
                   type="text"
                   readOnly
-                  value="https://ais-pre-elolfngen6z6f37daibx6g-647805725217.us-east1.run.app"
+                  value="https://apps.ravindran.in/maniq-academy/"
                   className="w-full bg-[#081420] border border-[#3E6E86]/50 rounded-lg px-3 py-2 text-xs font-mono text-[#5FD3BF] select-all outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => {
                     navigator.clipboard.writeText(
-                      'https://ais-pre-elolfngen6z6f37daibx6g-647805725217.us-east1.run.app'
+                      'https://apps.ravindran.in/maniq-academy/'
                     );
                     setCopiedShare(true);
                     setTimeout(() => setCopiedShare(false), 2500);
