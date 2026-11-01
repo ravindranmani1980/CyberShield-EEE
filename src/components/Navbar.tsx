@@ -195,7 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 rel="noopener noreferrer"
                 className="font-mono text-[#5FD3BF] hover:text-[#EBC385] underline underline-offset-4 transition-colors"
               >
-                Mani Ravindran (ravindran.in)
+                Ravindran Mani (ravindran.in)
               </a>
             </div>
           </div>
@@ -261,7 +261,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
               <div className="flex items-center justify-between text-[#A9B7BF]">
                 <span>Author:</span>
-                <span className="text-[#EEF3F1] font-semibold">Mani Ravindran</span>
+                <span className="text-[#EEF3F1] font-semibold">Ravindran Mani</span>
               </div>
             </div>
 

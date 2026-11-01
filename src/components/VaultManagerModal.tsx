@@ -265,7 +265,7 @@ export const VaultManagerModal: React.FC<VaultManagerModalProps> = ({
               </div>
               <p className="text-xs text-[#A9B7BF] flex items-center gap-1.5 mt-0.5">
                 <span>By</span>
-                <span className="font-semibold text-[#EEF3F1]">Mani Ravindran</span>
+                <span className="font-semibold text-[#EEF3F1]">Ravindran Mani</span>
                 <span>·</span>
                 <a
                   href="https://www.ravindran.in"
@@ -1051,7 +1051,7 @@ export const VaultManagerModal: React.FC<VaultManagerModalProps> = ({
               rel="noopener noreferrer"
               className="text-[#5FD3BF] hover:text-[#EBC385] underline underline-offset-4 font-semibold"
             >
-              Mani Ravindran (www.ravindran.in)
+              Ravindran Mani (www.ravindran.in)
             </a>
           </div>
         </div>

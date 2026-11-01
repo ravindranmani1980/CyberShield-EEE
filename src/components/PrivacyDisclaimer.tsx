@@ -341,7 +341,7 @@ export const PrivacyDisclaimer: React.FC<PrivacyDisclaimerProps> = ({
         </div>
         <div className="flex items-center gap-1.5">
           <span>Created by</span>
-          <span className="text-[#16232F] font-semibold">Mani Ravindran</span>
+          <span className="text-[#16232F] font-semibold">Ravindran Mani</span>
           <span>·</span>
           <a
             href="https://www.ravindran.in"

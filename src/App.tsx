@@ -399,7 +399,7 @@ export default function App() {
             </button>
             <span className="text-[#3E6E86]">·</span>
             <span>
-              Author: <strong className="font-medium text-[#F3F5F1]">Mani Ravindran</strong>
+              Author: <strong className="font-medium text-[#F3F5F1]">Ravindran Mani</strong>
             </span>
             <span className="text-[#3E6E86]">·</span>
             <a

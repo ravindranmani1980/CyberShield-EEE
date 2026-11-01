@@ -11,9 +11,83 @@ import {
   Clock,
   Activity,
   Award,
+  KeyRound,
+  Network,
+  Code2,
+  HardDrive,
+  Radar,
+  Filter,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { HabitItem, ProductivitySession, EncryptedUserData } from '../types';
+
+type HabitCategoryFilter =
+  | 'all'
+  | 'identity'
+  | 'network'
+  | 'code_audit'
+  | 'health_opsec'
+  | 'threat_intel';
+
+interface SecurityDomainMeta {
+  id: HabitCategoryFilter;
+  label: string;
+  shortLabel: string;
+  tagline: string;
+  badgeClass: string;
+  icon: React.ReactNode;
+}
+
+const SECURITY_DOMAINS: SecurityDomainMeta[] = [
+  {
+    id: 'all',
+    label: 'All Domains',
+    shortLabel: 'All',
+    tagline: 'Unified view across Identity, Network, Code, OpSec, and Threat Intel routines.',
+    badgeClass: 'bg-slate-100 text-slate-800 border-slate-300',
+    icon: <Filter className="w-3.5 h-3.5" />,
+  },
+  {
+    id: 'identity',
+    label: 'Identity',
+    shortLabel: 'Identity',
+    tagline: 'Hardware passkeys (FIDO2), privileged SSO session hygiene, and zero-trust IAM.',
+    badgeClass: 'bg-teal-50 text-teal-900 border-teal-200',
+    icon: <KeyRound className="w-3.5 h-3.5" />,
+  },
+  {
+    id: 'network',
+    label: 'Network',
+    shortLabel: 'Network',
+    tagline: 'Perimeter egress auditing, DNS anomaly inspection, and honeypot telemetry.',
+    badgeClass: 'bg-sky-50 text-sky-900 border-sky-200',
+    icon: <Network className="w-3.5 h-3.5" />,
+  },
+  {
+    id: 'code_audit',
+    label: 'Code',
+    shortLabel: 'Code',
+    tagline: 'SBOM supply-chain scanning, dependency CVE auditing, and secure code review.',
+    badgeClass: 'bg-indigo-50 text-indigo-900 border-indigo-200',
+    icon: <Code2 className="w-3.5 h-3.5" />,
+  },
+  {
+    id: 'health_opsec',
+    label: 'OpSec',
+    shortLabel: 'OpSec',
+    tagline: 'Air-gapped 3-2-1 cold backups, endpoint hardening, and operational discipline.',
+    badgeClass: 'bg-amber-50 text-amber-900 border-amber-200',
+    icon: <HardDrive className="w-3.5 h-3.5" />,
+  },
+  {
+    id: 'threat_intel',
+    label: 'Threat Intel',
+    shortLabel: 'Threat Intel',
+    tagline: 'CISA KEV triage, active CVE advisories, and deep threat hunting workflows.',
+    badgeClass: 'bg-emerald-50 text-emerald-900 border-emerald-200',
+    icon: <Radar className="w-3.5 h-3.5" />,
+  },
+];
 
 interface HabitTrackerProps {
   userData: EncryptedUserData;
@@ -46,7 +120,7 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
   const [newPriority, setNewPriority] = useState<'CRITICAL' | 'HIGH' | 'MEDIUM'>('HIGH');
 
   // Category filter
-  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterCategory, setFilterCategory] = useState<HabitCategoryFilter>('all');
 
   // Timer interval
   useEffect(() => {
@@ -335,7 +409,12 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
 
             <button
               type="button"
-              onClick={() => setShowAddModal(true)}
+              onClick={() => {
+                if (filterCategory !== 'all') {
+                  setNewCategory(filterCategory);
+                }
+                setShowAddModal(true);
+              }}
               className="px-3.5 py-2 rounded-lg bg-[#0E2238] hover:bg-[#16232F] text-[#F3F5F1] text-xs font-medium flex items-center gap-1.5 transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 text-[#5FD3BF]" />
@@ -343,85 +422,223 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({
             </button>
           </div>
 
-          {/* Filter Bar */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
-            {['all', 'identity', 'threat_intel', 'code_audit', 'network', 'health_opsec'].map(
-              (cat) => (
+          {/* Domain Category Filtering System */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#4B5A66] font-semibold">
+                Filter by Security Training Domain
+              </span>
+              {filterCategory !== 'all' && (
                 <button
-                  key={cat}
                   type="button"
-                  onClick={() => setFilterCategory(cat)}
-                  className={`px-3 py-1.5 rounded-lg capitalize whitespace-nowrap transition font-mono text-xs cursor-pointer border ${
-                    filterCategory === cat
-                      ? 'bg-[#0E2238] text-[#5FD3BF] border-[#0E2238] font-medium'
-                      : 'bg-[#F3F5F1] text-[#4B5A66] border-[#D9DDD3] hover:text-[#16232F]'
-                  }`}
+                  onClick={() => setFilterCategory('all')}
+                  className="text-[11px] font-mono text-[#0E2238] hover:text-[#D79A45] underline underline-offset-4 cursor-pointer"
                 >
-                  {cat === 'all' ? 'All Routines' : cat.replace('_', ' ')}
+                  Reset to All Domains ({userData.habits.length})
                 </button>
-              )
-            )}
-          </div>
+              )}
+            </div>
 
-          {/* Habit Cards */}
-          <div className="space-y-2.5">
-            {filteredHabits.map((habit) => {
-              const isDone = habit.completedDates.includes(today);
+            <div
+              role="tablist"
+              aria-label="Habit security domain filter"
+              className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2"
+            >
+              {SECURITY_DOMAINS.map((domain) => {
+                const domainHabits =
+                  domain.id === 'all'
+                    ? userData.habits
+                    : userData.habits.filter((h) => h.category === domain.id);
+                const domainCompleted = domainHabits.filter((h) =>
+                  h.completedDates.includes(today)
+                ).length;
+                const isSelected = filterCategory === domain.id;
+
+                return (
+                  <button
+                    key={domain.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isSelected}
+                    onClick={() => setFilterCategory(domain.id)}
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
+                      isSelected
+                        ? 'bg-[#0E2238] text-[#EEF3F1] border-[#0E2238] shadow-sm'
+                        : 'bg-[#F3F5F1] text-[#16232F] border-[#D9DDD3] hover:border-[#0E2238]/40 hover:bg-[#E9ECE6]/70'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-1">
+                      <span
+                        className={`${
+                          isSelected ? 'text-[#5FD3BF]' : 'text-[#0E2238]'
+                        }`}
+                      >
+                        {domain.icon}
+                      </span>
+                      <span
+                        className={`text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold tabular-nums ${
+                          isSelected
+                            ? 'bg-[#102236] text-[#5FD3BF] border border-[#5FD3BF]/30'
+                            : 'bg-white text-[#4B5A66] border border-[#D9DDD3]'
+                        }`}
+                      >
+                        {domainCompleted}/{domainHabits.length}
+                      </span>
+                    </div>
+                    <div className="font-mono text-xs font-semibold truncate">
+                      {domain.label}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Active Domain Focus Summary Bar */}
+            {(() => {
+              const activeDomain =
+                SECURITY_DOMAINS.find((d) => d.id === filterCategory) || SECURITY_DOMAINS[0];
+              const domainTotal = filteredHabits.length;
+              const domainDone = filteredHabits.filter((h) =>
+                h.completedDates.includes(today)
+              ).length;
+              const domainPct =
+                domainTotal > 0 ? Math.round((domainDone / domainTotal) * 100) : 0;
+
               return (
-                <div
-                  key={habit.id}
-                  onClick={() => handleToggleHabit(habit.id)}
-                  className={`group p-4 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-4 select-none ${
-                    isDone
-                      ? 'bg-emerald-50/70 border-emerald-300'
-                      : 'bg-[#F3F5F1]/60 hover:bg-[#F3F5F1] border-[#D9DDD3] hover:border-[#C7CDC0]'
-                  }`}
-                >
-                  <div className="flex items-start gap-3.5">
-                    <button
-                      type="button"
-                      className="mt-0.5 text-[#4B5A66] group-hover:text-[#16232F] transition shrink-0"
-                    >
-                      {isDone ? (
-                        <CheckCircle className="w-5 h-5 text-emerald-700 fill-emerald-100" />
-                      ) : (
-                        <Circle className="w-5 h-5 text-slate-400 group-hover:text-slate-600" />
-                      )}
-                    </button>
+                <div className="p-3 rounded-xl bg-[#0D1C2D] text-[#EEF3F1] border border-[#3E6E86]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <div className="flex items-start sm:items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-[#102236] border border-[#5FD3BF]/30 text-[#5FD3BF] flex items-center justify-center shrink-0">
+                      {activeDomain.icon}
+                    </div>
                     <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span
-                          className={`text-sm font-semibold ${
-                            isDone ? 'line-through text-[#4B5A66]' : 'text-[#16232F]'
-                          }`}
-                        >
-                          {habit.title}
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-semibold text-[#5FD3BF]">
+                          {activeDomain.label} Domain Focus
                         </span>
-                        <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded uppercase border font-semibold ${
-                            habit.priority === 'CRITICAL'
-                              ? 'bg-red-50 text-red-800 border-red-200'
-                              : habit.priority === 'HIGH'
-                              ? 'bg-amber-50 text-amber-800 border-amber-200'
-                              : 'bg-slate-100 text-slate-700 border-slate-300'
-                          }`}
-                        >
-                          {habit.priority}
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#102236] text-[#EBC385] border border-[#3E6E86]/40">
+                          {domainDone}/{domainTotal} Completed ({domainPct}%)
                         </span>
                       </div>
-                      <p className="text-xs text-[#4B5A66] mt-1 leading-relaxed">
-                        {habit.description}
+                      <p className="text-[11px] text-[#A9B7BF] mt-0.5">
+                        {activeDomain.tagline}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5 font-mono text-xs text-[#D79A45] font-semibold shrink-0 tabular-nums">
-                    <Flame className="w-4 h-4 fill-[#D79A45]/20" />
-                    <span>{habit.streak}d</span>
+                  <div className="w-full sm:w-32 shrink-0">
+                    <div className="w-full h-1.5 bg-[#081420] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#2BB5A0] transition-all duration-300"
+                        style={{ width: `${domainPct}%` }}
+                      />
+                    </div>
                   </div>
                 </div>
               );
-            })}
+            })()}
+          </div>
+
+          {/* Habit Cards */}
+          <div className="space-y-2.5">
+            {filteredHabits.length === 0 ? (
+              <div className="p-8 rounded-xl bg-[#F3F5F1] border border-dashed border-[#C7CDC0] text-center space-y-2">
+                <p className="text-sm font-semibold text-[#16232F]">
+                  No routines found in the{' '}
+                  {SECURITY_DOMAINS.find((d) => d.id === filterCategory)?.label || filterCategory}{' '}
+                  domain.
+                </p>
+                <p className="text-xs text-[#4B5A66]">
+                  Add a custom security routine to this domain or switch back to All Domains.
+                </p>
+                <div className="flex items-center justify-center gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (filterCategory !== 'all') {
+                        setNewCategory(filterCategory);
+                      }
+                      setShowAddModal(true);
+                    }}
+                    className="px-3.5 py-2 rounded-lg bg-[#0E2238] text-[#F3F5F1] text-xs font-medium inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-[#5FD3BF]" />
+                    <span>Add Routine to Domain</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFilterCategory('all')}
+                    className="px-3.5 py-2 rounded-lg bg-white text-[#16232F] border border-[#C7CDC0] text-xs font-medium cursor-pointer"
+                  >
+                    Show All Domains
+                  </button>
+                </div>
+              </div>
+            ) : (
+              filteredHabits.map((habit) => {
+                const isDone = habit.completedDates.includes(today);
+                const domainMeta =
+                  SECURITY_DOMAINS.find((d) => d.id === habit.category) || SECURITY_DOMAINS[1];
+                return (
+                  <div
+                    key={habit.id}
+                    onClick={() => handleToggleHabit(habit.id)}
+                    className={`group p-4 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-4 select-none ${
+                      isDone
+                        ? 'bg-emerald-50/70 border-emerald-300'
+                        : 'bg-[#F3F5F1]/60 hover:bg-[#F3F5F1] border-[#D9DDD3] hover:border-[#C7CDC0]'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3.5">
+                      <button
+                        type="button"
+                        className="mt-0.5 text-[#4B5A66] group-hover:text-[#16232F] transition shrink-0"
+                      >
+                        {isDone ? (
+                          <CheckCircle className="w-5 h-5 text-emerald-700 fill-emerald-100" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-slate-400 group-hover:text-slate-600" />
+                        )}
+                      </button>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span
+                            className={`text-sm font-semibold ${
+                              isDone ? 'line-through text-[#4B5A66]' : 'text-[#16232F]'
+                            }`}
+                          >
+                            {habit.title}
+                          </span>
+                          <span
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded border font-semibold inline-flex items-center gap-1 ${domainMeta.badgeClass}`}
+                          >
+                            {domainMeta.shortLabel}
+                          </span>
+                          <span
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded uppercase border font-semibold ${
+                              habit.priority === 'CRITICAL'
+                                ? 'bg-red-50 text-red-800 border-red-200'
+                                : habit.priority === 'HIGH'
+                                ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                : 'bg-slate-100 text-slate-700 border-slate-300'
+                            }`}
+                          >
+                            {habit.priority}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#4B5A66] mt-1 leading-relaxed">
+                          {habit.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 font-mono text-xs text-[#D79A45] font-semibold shrink-0 tabular-nums">
+                      <Flame className="w-4 h-4 fill-[#D79A45]/20" />
+                      <span>{habit.streak}d</span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </section>
 
