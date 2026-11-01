@@ -21,6 +21,7 @@ import {
 import confetti from 'canvas-confetti';
 import {
   evaluatePassphraseStrength,
+  evaluatePasswordComplexity,
   generateSecurePassword,
   EncryptedPayload,
 } from '../lib/crypto';
@@ -96,6 +97,7 @@ export const VaultManagerModal: React.FC<VaultManagerModalProps> = ({
   const [credentialFilter, setCredentialFilter] = useState('all');
 
   const strength = evaluatePassphraseStrength(passphrase);
+  const passwordComplexity = evaluatePasswordComplexity(generatedPassword);
 
   // Re-generate password using Web Crypto CSPRNG
   const handleRegenerate = () => {
@@ -112,7 +114,13 @@ export const VaultManagerModal: React.FC<VaultManagerModalProps> = ({
     setStrengthLabel(res.strengthLabel);
   };
 
-  // Generate on initial load
+  // Sync entropyBits & strengthLabel whenever generatedPassword is changed manually or via CSPRNG
+  useEffect(() => {
+    setEntropyBits(passwordComplexity.entropyBits);
+    setStrengthLabel(passwordComplexity.strengthLabel);
+  }, [generatedPassword, passwordComplexity.entropyBits, passwordComplexity.strengthLabel]);
+
+  // Generate on initial load or when generator options change
   useEffect(() => {
     handleRegenerate();
   }, [genLength, includeUpper, includeLower, includeNumbers, includeSymbols, excludeAmbiguous]);
@@ -309,7 +317,7 @@ export const VaultManagerModal: React.FC<VaultManagerModalProps> = ({
             }`}
           >
             <Key className="w-3.5 h-3.5" />
-            <span>Password Generator</span>
+            <span>Generate ({passwordComplexity.complexityScore}/100)</span>
           </button>
 
           <button
@@ -505,22 +513,38 @@ export const VaultManagerModal: React.FC<VaultManagerModalProps> = ({
           {/* TAB 2: CRYPTOGRAPHIC PASSWORD GENERATOR */}
           {activeTab === 'generator' && (
             <div className="space-y-4 text-xs">
-              <div className="p-4 rounded-lg bg-[#102236] border border-[#3E6E86]/40 space-y-2">
-                <div className="flex items-center justify-between">
+              <div className="p-4 rounded-lg bg-[#102236] border border-[#3E6E86]/40 space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <span className="text-[11px] font-mono text-[#A9B7BF]">
-                    CSPRNG Generated Password:
+                    CSPRNG Generated / Editable Password:
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#2BB5A0]/15 text-[#5FD3BF] border border-[#5FD3BF]/30">
-                    {entropyBits} bits entropy · {strengthLabel}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#081420] text-[#EBC385] border border-[#EBC385]/30">
+                      Complexity Score: {passwordComplexity.complexityScore}/100
+                    </span>
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
+                        passwordComplexity.strengthLabel === 'Quantum-Grade'
+                          ? 'bg-[#2BB5A0]/15 text-[#5FD3BF] border-[#5FD3BF]/30'
+                          : passwordComplexity.strengthLabel === 'Strong'
+                          ? 'bg-sky-500/15 text-sky-300 border-sky-400/30'
+                          : passwordComplexity.strengthLabel === 'Moderate'
+                          ? 'bg-amber-500/15 text-[#EBC385] border-[#EBC385]/30'
+                          : 'bg-rose-500/15 text-rose-300 border-rose-400/30'
+                      }`}
+                    >
+                      {passwordComplexity.entropyBits} bits · {passwordComplexity.strengthLabel}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
-                    readOnly
                     value={generatedPassword}
-                    className="w-full bg-[#081420] border border-[#3E6E86]/50 rounded-lg px-3.5 py-2.5 text-sm font-mono text-[#5FD3BF] tracking-wider outline-none select-all"
+                    onChange={(e) => setGeneratedPassword(e.target.value)}
+                    placeholder="Generate or type custom password to inspect live complexity..."
+                    className="w-full bg-[#081420] border border-[#3E6E86]/50 focus:border-[#5FD3BF] rounded-lg px-3.5 py-2.5 text-sm font-mono text-[#5FD3BF] tracking-wider outline-none select-all transition"
                   />
                   <button
                     type="button"
@@ -545,6 +569,171 @@ export const VaultManagerModal: React.FC<VaultManagerModalProps> = ({
                     <CheckCircle2 className="w-3.5 h-3.5" /> Copied to clipboard!
                   </p>
                 )}
+
+                {/* Real-Time Password Strength Visual Indicator & Complexity Score Panel */}
+                <div className="p-3.5 rounded-lg bg-[#081420] border border-[#3E6E86]/40 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Shield
+                        className={`w-4 h-4 ${
+                          passwordComplexity.strengthLabel === 'Quantum-Grade'
+                            ? 'text-[#5FD3BF]'
+                            : passwordComplexity.strengthLabel === 'Strong'
+                            ? 'text-sky-400'
+                            : passwordComplexity.strengthLabel === 'Moderate'
+                            ? 'text-[#EBC385]'
+                            : 'text-rose-400'
+                        }`}
+                      />
+                      <span className="font-mono text-[11px] uppercase tracking-wider text-[#C6D1D6] font-semibold">
+                        Real-Time Strength &amp; Complexity
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 font-mono">
+                      <span
+                        className={`text-xs font-bold ${
+                          passwordComplexity.strengthLabel === 'Quantum-Grade'
+                            ? 'text-[#5FD3BF]'
+                            : passwordComplexity.strengthLabel === 'Strong'
+                            ? 'text-sky-400'
+                            : passwordComplexity.strengthLabel === 'Moderate'
+                            ? 'text-[#EBC385]'
+                            : 'text-rose-400'
+                        }`}
+                      >
+                        {passwordComplexity.strengthLabel}
+                      </span>
+                      <span className="text-[#EEF3F1] bg-[#102236] border border-[#3E6E86]/50 px-2 py-0.5 rounded text-xs font-bold">
+                        {passwordComplexity.complexityScore}
+                        <span className="text-[#7F909A] font-normal">/100</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 4-Segment Strength Tier Visual Indicator */}
+                  <div className="grid grid-cols-4 gap-1.5" aria-label="Password strength tier meter">
+                    {[
+                      { tier: 1, label: 'Weak', activeClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]' },
+                      { tier: 2, label: 'Moderate', activeClass: 'bg-[#D79A45] shadow-[0_0_8px_rgba(215,154,69,0.4)]' },
+                      { tier: 3, label: 'Strong', activeClass: 'bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.4)]' },
+                      { tier: 4, label: 'Quantum-Grade', activeClass: 'bg-[#2BB5A0] shadow-[0_0_10px_rgba(95,211,191,0.5)]' },
+                    ].map((seg) => {
+                      const isActive = passwordComplexity.tierIndex >= seg.tier;
+                      return (
+                        <div key={seg.tier} className="space-y-1">
+                          <div
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              isActive ? seg.activeClass : 'bg-[#102236] border border-[#3E6E86]/30'
+                            }`}
+                          />
+                          <div
+                            className={`text-[9px] font-mono text-center truncate ${
+                              passwordComplexity.tierIndex === seg.tier
+                                ? 'text-[#EEF3F1] font-semibold'
+                                : 'text-[#7F909A]'
+                            }`}
+                          >
+                            {seg.label}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Continuous Complexity Score Progress Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[10px] font-mono text-[#A9B7BF]">
+                      <span>Cryptographic Complexity Index</span>
+                      <span className="text-[#EEF3F1] font-semibold">
+                        {passwordComplexity.complexityScore}% · Est. Offline Crack Time:{' '}
+                        <span className="text-[#5FD3BF]">{passwordComplexity.crackTimeDisplay}</span>
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 bg-[#102236] rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-300 ${
+                          passwordComplexity.strengthLabel === 'Quantum-Grade'
+                            ? 'bg-gradient-to-r from-[#2BB5A0] to-[#5FD3BF]'
+                            : passwordComplexity.strengthLabel === 'Strong'
+                            ? 'bg-sky-400'
+                            : passwordComplexity.strengthLabel === 'Moderate'
+                            ? 'bg-[#D79A45]'
+                            : 'bg-rose-500'
+                        }`}
+                        style={{ width: `${passwordComplexity.complexityScore}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Live Character Composition & Diversity Breakdown */}
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 pt-1 font-mono text-[10px]">
+                    <div
+                      className={`p-1.5 rounded border text-center ${
+                        passwordComplexity.charBreakdown.upper > 0
+                          ? 'bg-[#102236] border-[#5FD3BF]/35 text-[#EEF3F1]'
+                          : 'bg-[#0D1C2D]/50 border-[#3E6E86]/20 text-[#7F909A]'
+                      }`}
+                    >
+                      <div className="text-[9px] text-[#A9B7BF]">UPPER (A-Z)</div>
+                      <div className="font-bold text-[#5FD3BF]">{passwordComplexity.charBreakdown.upper}</div>
+                    </div>
+
+                    <div
+                      className={`p-1.5 rounded border text-center ${
+                        passwordComplexity.charBreakdown.lower > 0
+                          ? 'bg-[#102236] border-[#5FD3BF]/35 text-[#EEF3F1]'
+                          : 'bg-[#0D1C2D]/50 border-[#3E6E86]/20 text-[#7F909A]'
+                      }`}
+                    >
+                      <div className="text-[9px] text-[#A9B7BF]">LOWER (a-z)</div>
+                      <div className="font-bold text-[#5FD3BF]">{passwordComplexity.charBreakdown.lower}</div>
+                    </div>
+
+                    <div
+                      className={`p-1.5 rounded border text-center ${
+                        passwordComplexity.charBreakdown.digits > 0
+                          ? 'bg-[#102236] border-[#5FD3BF]/35 text-[#EEF3F1]'
+                          : 'bg-[#0D1C2D]/50 border-[#3E6E86]/20 text-[#7F909A]'
+                      }`}
+                    >
+                      <div className="text-[9px] text-[#A9B7BF]">DIGITS (0-9)</div>
+                      <div className="font-bold text-[#5FD3BF]">{passwordComplexity.charBreakdown.digits}</div>
+                    </div>
+
+                    <div
+                      className={`p-1.5 rounded border text-center ${
+                        passwordComplexity.charBreakdown.symbols > 0
+                          ? 'bg-[#102236] border-[#5FD3BF]/35 text-[#EEF3F1]'
+                          : 'bg-[#0D1C2D]/50 border-[#3E6E86]/20 text-[#7F909A]'
+                      }`}
+                    >
+                      <div className="text-[9px] text-[#A9B7BF]">SYMBOLS</div>
+                      <div className="font-bold text-[#EBC385]">{passwordComplexity.charBreakdown.symbols}</div>
+                    </div>
+
+                    <div className="p-1.5 rounded border bg-[#102236] border-[#3E6E86]/35 text-center col-span-2 sm:col-span-1">
+                      <div className="text-[9px] text-[#A9B7BF]">UNIQUENESS</div>
+                      <div className="font-bold text-[#EEF3F1]">
+                        {passwordComplexity.charBreakdown.uniqueRatio}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {passwordComplexity.warnings.length > 0 && (
+                    <div className="pt-1 space-y-1">
+                      {passwordComplexity.warnings.map((warn, idx) => (
+                        <div
+                          key={idx}
+                          className="text-[10px] font-mono text-[#EBC385] flex items-center gap-1.5"
+                        >
+                          <AlertTriangle className="w-3 h-3 shrink-0 text-[#D79A45]" />
+                          <span>{warn}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Generator Configuration Sliders & Toggles */}

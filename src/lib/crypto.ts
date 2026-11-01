@@ -262,3 +262,166 @@ export function generateSecurePassword(options: PasswordGenerationOptions): {
 
   return { password, entropyBits, strengthLabel };
 }
+
+export interface PasswordComplexityAnalysis {
+  complexityScore: number; // 0 - 100
+  entropyBits: number;
+  strengthLabel: 'Weak' | 'Moderate' | 'Strong' | 'Quantum-Grade';
+  tierIndex: 0 | 1 | 2 | 3 | 4;
+  crackTimeDisplay: string;
+  charBreakdown: {
+    upper: number;
+    lower: number;
+    digits: number;
+    symbols: number;
+    uniqueChars: number;
+    uniqueRatio: number;
+    activeClasses: number;
+  };
+  warnings: string[];
+}
+
+/**
+ * Real-time deterministic password complexity & cryptographic strength analyzer
+ */
+export function evaluatePasswordComplexity(password: string): PasswordComplexityAnalysis {
+  if (!password) {
+    return {
+      complexityScore: 0,
+      entropyBits: 0,
+      strengthLabel: 'Weak',
+      tierIndex: 0,
+      crackTimeDisplay: 'Instant (< 1 ms)',
+      charBreakdown: {
+        upper: 0,
+        lower: 0,
+        digits: 0,
+        symbols: 0,
+        uniqueChars: 0,
+        uniqueRatio: 0,
+        activeClasses: 0,
+      },
+      warnings: ['Enter or generate a password to evaluate complexity.'],
+    };
+  }
+
+  const length = password.length;
+  const upperMatches = password.match(/[A-Z]/g) || [];
+  const lowerMatches = password.match(/[a-z]/g) || [];
+  const digitMatches = password.match(/[0-9]/g) || [];
+  const symbolMatches = password.match(/[^A-Za-z0-9]/g) || [];
+
+  const upper = upperMatches.length;
+  const lower = lowerMatches.length;
+  const digits = digitMatches.length;
+  const symbols = symbolMatches.length;
+
+  let poolSize = 0;
+  let activeClasses = 0;
+  if (upper > 0) {
+    poolSize += 26;
+    activeClasses += 1;
+  }
+  if (lower > 0) {
+    poolSize += 26;
+    activeClasses += 1;
+  }
+  if (digits > 0) {
+    poolSize += 10;
+    activeClasses += 1;
+  }
+  if (symbols > 0) {
+    poolSize += 32;
+    activeClasses += 1;
+  }
+
+  const uniqueChars = new Set(password.split('')).size;
+  const uniqueRatio = Math.round((uniqueChars / length) * 100);
+
+  // Effective entropy accounting for character uniqueness
+  const rawEntropy = poolSize > 0 ? length * Math.log2(poolSize) : 0;
+  const uniquenessFactor = 0.65 + 0.35 * (uniqueChars / length);
+  const entropyBits = Math.round(rawEntropy * uniquenessFactor);
+
+  // Calculate 0-100 Complexity Score
+  // 1. Length contribution (up to 45 pts)
+  const lengthPts = Math.min(45, Math.round((length / 28) * 45));
+  // 2. Character class diversity (up to 28 pts)
+  const classPts = activeClasses * 7;
+  // 3. Uniqueness & distribution balance (up to 17 pts)
+  const uniquenessPts = Math.round((uniqueChars / length) * 17);
+  // 4. Symbol & high-entropy bonus (up to 10 pts)
+  const bonusPts = Math.min(10, symbols * 2 + (length >= 20 && activeClasses === 4 ? 4 : 0));
+
+  const warnings: string[] = [];
+  let penalty = 0;
+
+  if (/(.)\1{2,}/.test(password)) {
+    penalty += 12;
+    warnings.push('Contains 3+ identical consecutive characters');
+  }
+  if (/(012|123|234|345|456|567|678|789|abc|bcd|cde|def|qwe|asd|zxc)/i.test(password)) {
+    penalty += 15;
+    warnings.push('Contains predictable sequential or keyboard pattern');
+  }
+  if (length < 12) {
+    warnings.push('Length under 12 characters reduces brute-force margin');
+  }
+  if (activeClasses < 3) {
+    warnings.push('Enable at least 3 character classes for stronger pool diversity');
+  }
+
+  const complexityScore = Math.max(4, Math.min(100, lengthPts + classPts + uniquenessPts + bonusPts - penalty));
+
+  let strengthLabel: 'Weak' | 'Moderate' | 'Strong' | 'Quantum-Grade' = 'Weak';
+  let tierIndex: 1 | 2 | 3 | 4 = 1;
+
+  if (complexityScore >= 85 && entropyBits >= 110) {
+    strengthLabel = 'Quantum-Grade';
+    tierIndex = 4;
+  } else if (complexityScore >= 68 && entropyBits >= 75) {
+    strengthLabel = 'Strong';
+    tierIndex = 3;
+  } else if (complexityScore >= 45 && entropyBits >= 50) {
+    strengthLabel = 'Moderate';
+    tierIndex = 2;
+  } else {
+    strengthLabel = 'Weak';
+    tierIndex = 1;
+  }
+
+  // Offline crack time estimation @ 10^11 guesses/sec (high-end GPU cluster)
+  let crackTimeDisplay = '< 1 second';
+  if (entropyBits >= 128) {
+    crackTimeDisplay = '> 10²⁰ Years (Quantum-Safe)';
+  } else if (entropyBits >= 100) {
+    crackTimeDisplay = '~10¹² Years (Multi-Millennia)';
+  } else if (entropyBits >= 80) {
+    crackTimeDisplay = '~380,000 Years';
+  } else if (entropyBits >= 65) {
+    crackTimeDisplay = '~11 Years';
+  } else if (entropyBits >= 52) {
+    crackTimeDisplay = '~12 Hours';
+  } else if (entropyBits >= 40) {
+    crackTimeDisplay = '~11 Seconds';
+  }
+
+  return {
+    complexityScore,
+    entropyBits,
+    strengthLabel,
+    tierIndex,
+    crackTimeDisplay,
+    charBreakdown: {
+      upper,
+      lower,
+      digits,
+      symbols,
+      uniqueChars,
+      uniqueRatio,
+      activeClasses,
+    },
+    warnings,
+  };
+}
+
