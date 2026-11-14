@@ -295,8 +295,40 @@ export const SocialEngineeringTrainer: React.FC = () => {
                 {/* Response Options */}
                 {callState === 'in_call' && currentNode.options && (
                   <div className="space-y-2 pt-2 border-t border-[#3E6E86]/40">
-                    <span className="text-[10px] font-mono text-[#5FD3BF] uppercase block">
-                      Choose Your Response:
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCallState('ended');
+                        setScore((prev) => Math.min(100, prev + 15));
+                        setDialogueHistory((prev) => [
+                          ...prev,
+                          {
+                            speaker: 'user',
+                            text: '[PAUSE & VERIFY EXECUTED: Broke the panic freeze, hung up inbound call, and initiated independent out-of-band verification]',
+                            feedback:
+                              'Perfect Pause & Verify reflex! You overcame the "freeze moment" under social engineering pressure and terminated the call to verify out-of-band.',
+                            isSafe: true,
+                          },
+                        ]);
+                        try {
+                          confetti({
+                            particleCount: 70,
+                            spread: 60,
+                            origin: { y: 0.7 },
+                            colors: ['#2BB5A0', '#5FD3BF', '#EBC385'],
+                          });
+                        } catch {
+                          // ignore
+                        }
+                      }}
+                      className="w-full py-2.5 px-3 rounded-lg bg-[#2BB5A0] hover:bg-[#5FD3BF] text-[#04211B] font-mono font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition cursor-pointer"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>PAUSE &amp; VERIFY (Hang Up &amp; Verify Out-of-Band)</span>
+                    </button>
+
+                    <span className="text-[10px] font-mono text-[#5FD3BF] uppercase block pt-1">
+                      Or Choose Dialogue Response:
                     </span>
                     {currentNode.options.map((opt, i) => (
                       <button

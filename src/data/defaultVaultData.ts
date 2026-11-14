@@ -62,6 +62,16 @@ export const INITIAL_USER_DATA: EncryptedUserData = {
       streak: 6,
       priority: 'HIGH',
     },
+    {
+      id: 'h7',
+      title: 'Pause & Verify: 30s Anti-Freeze Call Drill',
+      category: 'health_opsec',
+      cadence: 'daily',
+      description: 'Run a 30-second simulated attack call freeze-and-assess drill so panic never overrides hanging up and verifying out-of-band.',
+      completedDates: [],
+      streak: 5,
+      priority: 'CRITICAL',
+    },
   ],
   productivitySessions: [
     {

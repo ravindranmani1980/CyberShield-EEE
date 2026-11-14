@@ -154,7 +154,7 @@ export const PauseVerifySimulator: React.FC = () => {
   );
   const [drillState, setDrillState] = useState<
     'ready' | 'active_freeze_drill' | 'verified_success' | 'timeout_freeze_fail' | 'comply_trap_fail'
-  >('ready');
+  >('active_freeze_drill');
   const [timeLeft, setTimeLeft] = useState<number>(DRILL_DURATION_SECONDS);
   const [checkedSteps, setCheckedSteps] = useState<{
     breathe: boolean;
@@ -169,7 +169,7 @@ export const PauseVerifySimulator: React.FC = () => {
   const [verifiedStreak, setVerifiedStreak] = useState<number>(0);
   const [bestReactionSeconds, setBestReactionSeconds] = useState<number | null>(null);
   const [lastReactionSeconds, setLastReactionSeconds] = useState<number | null>(null);
-  const startTimeRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number | null>(Date.now());
 
   // Pick a random suspicious call scenario different from the current one
   const generateRandomScenario = (): SuspiciousCallScenario => {

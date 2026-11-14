@@ -50,14 +50,14 @@ export const SECURITY_TIPS: SecurityTip[] = [
   },
   {
     id: 'tip-vishing-out-of-band',
-    title: 'Establish Out-of-Band Verification for Urgent Financial or OTP Requests',
+    title: 'Defeat the Vishing "Freeze Moment" with a 30-Second Pause & Verify Habit',
     category: 'Phishing & OpSec',
     impactLevel: 'CRITICAL',
     summary:
-      'Caller ID spoofing and real-time voice cloning allow social engineers to impersonate bank fraud departments, executives, or IT helpdesks under artificial urgency.',
+      'The "freeze moment" is the real risk in voice social engineering: people know hanging up is an option, but panic makes them forget it in the moment. Running simulated attack call drills builds the Pause & Verify muscle memory before a real attack hits.',
     actionableStep:
-      'Never read out an OTP, ATM PIN, or approve an urgent wire transfer on an inbound call. Hang up and call back using a verified number from an official directory or card back.',
-    frameworkRef: 'CISA Social Engineering Defense Guide',
+      'Practice the 30-second Freeze-and-Assess drill daily: pause under urgency, refuse in-call OTP or wire demands, hang up, and verify out-of-band via an independent channel.',
+    frameworkRef: 'CISA Social Engineering & Vishing Defense Guide',
   },
   {
     id: 'tip-cloud-imds-v2',
