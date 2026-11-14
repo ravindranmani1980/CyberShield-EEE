@@ -6,12 +6,15 @@ import {
   Award,
   RotateCcw,
   Zap,
+  Timer,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { VISHING_SCENARIOS } from '../data/vishingScenarios';
 import { VishingScenario, VishingDialogueNode } from '../types';
+import { PauseVerifySimulator } from './PauseVerifySimulator';
 
 export const SocialEngineeringTrainer: React.FC = () => {
+  const [trainerMode, setTrainerMode] = useState<'call_tree' | 'pause_verify'>('call_tree');
   const [scenarios] = useState<VishingScenario[]>(VISHING_SCENARIOS);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>(VISHING_SCENARIOS[0].id);
 
@@ -147,29 +150,63 @@ export const SocialEngineeringTrainer: React.FC = () => {
           </div>
         </div>
 
-        {/* Preset Selector */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-4 text-xs">
-          <span className="text-[#A9B7BF] font-mono text-[11px] uppercase mr-1 shrink-0">
-            Select Scenario:
-          </span>
-          {scenarios.map((s) => (
+        {/* Mode Switcher + Scenario Selector */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 text-xs">
+          <div className="flex items-center gap-2">
             <button
-              key={s.id}
               type="button"
-              onClick={() => handleSelectScenario(s.id)}
-              className={`xh-btn !py-1.5 !px-3 whitespace-nowrap shrink-0 ${
-                selectedScenarioId === s.id
+              onClick={() => setTrainerMode('call_tree')}
+              className={`xh-btn !py-1.5 !px-3 cursor-pointer ${
+                trainerMode === 'call_tree'
                   ? '!border-[#5FD3BF] !bg-[#5FD3BF]/15 !text-[#5FD3BF]'
                   : ''
               }`}
             >
-              {s.attackVector}: {s.title.split(':')[0]}
+              <PhoneCall className="w-3.5 h-3.5" />
+              <span>Interactive Call Tree</span>
             </button>
-          ))}
+            <button
+              type="button"
+              onClick={() => setTrainerMode('pause_verify')}
+              className={`xh-btn !py-1.5 !px-3 cursor-pointer ${
+                trainerMode === 'pause_verify'
+                  ? '!border-[#EBC385] !bg-[#EBC385]/15 !text-[#EBC385]'
+                  : ''
+              }`}
+            >
+              <Timer className="w-3.5 h-3.5 text-[#EBC385]" />
+              <span>30s &lsquo;Pause &amp; Verify&rsquo; Freeze Drill</span>
+            </button>
+          </div>
+
+          {trainerMode === 'call_tree' && (
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+              <span className="text-[#A9B7BF] font-mono text-[11px] uppercase mr-1 shrink-0">
+                Select Scenario:
+              </span>
+              {scenarios.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => handleSelectScenario(s.id)}
+                  className={`xh-btn !py-1.5 !px-3 whitespace-nowrap shrink-0 ${
+                    selectedScenarioId === s.id
+                      ? '!border-[#5FD3BF] !bg-[#5FD3BF]/15 !text-[#5FD3BF]'
+                      : ''
+                  }`}
+                >
+                  {s.attackVector}: {s.title.split(':')[0]}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Main Grid: Interactive Smartphone Simulator on Left, Psychological Radar & Takeaways on Right */}
+      {trainerMode === 'pause_verify' ? (
+        <PauseVerifySimulator />
+      ) : (
+      /* Main Grid: Interactive Smartphone Simulator on Left, Psychological Radar & Takeaways on Right */
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Smartphone Call Screen (6 cols) */}
         <div className="lg:col-span-6 space-y-4">
@@ -375,6 +412,7 @@ export const SocialEngineeringTrainer: React.FC = () => {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };

@@ -19,6 +19,7 @@ import { EmailScanner } from './components/EmailScanner';
 import { PhishingCampaigns } from './components/PhishingCampaigns';
 import { VulnerabilityLab } from './components/VulnerabilityLab';
 import { SocialEngineeringTrainer } from './components/SocialEngineeringTrainer';
+import { PauseVerifySimulator } from './components/PauseVerifySimulator';
 import { BreachPredictor } from './components/BreachPredictor';
 import { CyberTrainingGame } from './components/CyberTrainingGame';
 import { PrivacyDisclaimer } from './components/PrivacyDisclaimer';
@@ -336,6 +337,9 @@ export default function App() {
 
         {/* Social Engineering & Vishing Trainer View */}
         {activeTab === 'vishing' && <SocialEngineeringTrainer />}
+
+        {/* 30-Second 'Pause & Verify' Freeze-and-Assess Simulation View */}
+        {activeTab === 'pause_verify' && <PauseVerifySimulator />}
 
         {/* ML Breach Predictor View */}
         {activeTab === 'breach_predictor' && <BreachPredictor />}

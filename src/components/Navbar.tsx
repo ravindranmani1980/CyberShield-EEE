@@ -16,6 +16,7 @@ import {
   Gamepad2,
   EyeOff,
   ServerOff,
+  Timer,
 } from 'lucide-react';
 
 export type ActiveTab =
@@ -24,6 +25,7 @@ export type ActiveTab =
   | 'phishing'
   | 'vulnerability_lab'
   | 'vishing'
+  | 'pause_verify'
   | 'breach_predictor'
   | 'training_game'
   | 'disclaimer';
@@ -54,6 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'phishing', label: 'Phishing Sim', icon: <Target className="w-3.5 h-3.5" /> },
     { id: 'vulnerability_lab', label: 'Vulnerability Lab', icon: <Bug className="w-3.5 h-3.5" /> },
     { id: 'vishing', label: 'Vishing Defense', icon: <PhoneCall className="w-3.5 h-3.5" /> },
+    { id: 'pause_verify', label: 'Pause & Verify', icon: <Timer className="w-3.5 h-3.5 text-[#5FD3BF]" /> },
     { id: 'breach_predictor', label: 'Breach Predictor', icon: <BrainCircuit className="w-3.5 h-3.5" /> },
     { id: 'training_game', label: 'Threat Blitz', icon: <Gamepad2 className="w-3.5 h-3.5 text-[#EBC385]" /> },
   ];
